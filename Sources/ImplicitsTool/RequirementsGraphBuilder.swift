@@ -39,7 +39,7 @@ private struct UnresolvedGraph<Syntax, File> {
   var implicitStoredProperties = [Sema.Namespace: (head: Idx, tail: Idx)]()
   var initializers = [Sema.Namespace: [Idx]]()
   var bags = [(SMT.ImplicitBag, Idx, File)]()
-  var namedImplicitsWrappers = [(wrapperName: String, closureParamCount: Int, Idx, File)]()
+  var namedImplicitsWrappers = [ReqGraph.WrapperInfo<Idx>]()
   var seenWrapperNames = [String: Syntax?]() // nil = already reported duplicate
   var diagnostics = Diagnostics()
   var publicInterface = [(Idx, SymbolInfo<Syntax>)]()
@@ -54,12 +54,7 @@ private struct UnresolvedGraph<Syntax, File> {
     RequirementsGraph<Syntax, File>(
       graph: graph, entryPoints: entryPoints,
       bags: bags.map { ($0.1, name: $0.0.node.fillFunctionName, $0.2) },
-      namedImplicitsWrappers: namedImplicitsWrappers.map { (
-        $0.2,
-        $0.wrapperName,
-        $0.closureParamCount,
-        $0.3
-      ) },
+      namedImplicitsWrappers: namedImplicitsWrappers,
       publicInterface: publicInterface,
       testableInterface: testableInterface,
       implicitFunctions: implicitFunctions
@@ -645,7 +640,12 @@ extension UnresolvedGraph {
       )
       innerState.endLocalScope(at: sema.syntax, diagnostics: &diagnostics)
       traverseCodeBlock(body, state: &innerState)
-    case let .withNamedImplicits(wrapperName: name, closureParamCount: paramCount, body: body):
+    case let .withNamedImplicits(
+      wrapperName: name,
+      closureParamCount: paramCount,
+      effects: effects,
+      body: body
+    ):
       diagnostics.check(state.hasScope, or: .noScope, at: sema.syntax)
 
       var innerState = state
@@ -656,7 +656,13 @@ extension UnresolvedGraph {
       case .none:
         seenWrapperNames[name] = sema.syntax
         let wrapperNode = addNode(syntax: sema.syntax, parent: state.parent)
-        namedImplicitsWrappers.append((name, paramCount, wrapperNode, state.file))
+        namedImplicitsWrappers.append(ReqGraph.WrapperInfo(
+          wrapperName: name,
+          closureParamCount: paramCount,
+          effects: effects,
+          resolution: wrapperNode,
+          file: state.file
+        ))
         innerState.parent = wrapperNode
       case let .some(previousUsage?):
         diagnostics.diagnose(.duplicateWrapperName(name), at: sema.syntax)

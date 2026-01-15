@@ -44,6 +44,24 @@ private func withImplicits(_: ImplicitScope) {
     _ = a; _ = b
     requires(scope)
   }
+
+  // Async wrapper
+  _ = withAsyncImplicits { scope in
+    await asyncFunc()
+    requires(scope)
+  }
+
+  // Throwing wrapper
+  _ = withThrowingImplicits { scope in
+    try throwingFunc()
+    requires(scope)
+  }
+
+  // Async throwing wrapper
+  _ = withAsyncThrowingImplicits { scope in
+    try await asyncThrowingFunc()
+    requires(scope)
+  }
 }
 
 @_spi(Implicits)
@@ -129,3 +147,8 @@ private func requires(_: ImplicitScope) {
   @Implicit()
   var a2: UInt16
 }
+
+// Helper stubs for effect testing
+private func asyncFunc() async {}
+private func throwingFunc() throws {}
+private func asyncThrowingFunc() async throws {}

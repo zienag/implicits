@@ -3,6 +3,7 @@
 enum SupportFileBuilder<Syntax> {
   typealias Diagnostics = DiagnosticsGeneric<Syntax>
   typealias SyntaxTreeFile = (name: String, content: [SyntaxTree<SyntaxInfo>.TopLevelEntity])
+  typealias ResolvedWrapperInfo = WrapperInfo<[ImplicitKey], SyntaxTreeFile>
 
   private typealias ImplicitParameter = SupportFile.ImplicitParameter
 
@@ -14,12 +15,7 @@ enum SupportFileBuilder<Syntax> {
     semaTrees: [[SemaTree<Syntax>.TopLevel]],
     implicitFunctions: [(SemaTree<Syntax>.FuncDecl, SyntaxTreeFile, [ImplicitKey])],
     bags: [(name: String, requirements: [ImplicitKey], file: SyntaxTreeFile)],
-    namedImplicitsWrappers: [(
-      wrapperName: String,
-      closureParamCount: Int,
-      requirements: [ImplicitKey],
-      file: SyntaxTreeFile
-    )],
+    namedImplicitsWrappers: [ResolvedWrapperInfo],
     enableExporting: Bool,
     dependencies: [ImplicitModuleInterface],
     diagnostics: inout Diagnostics,
@@ -135,15 +131,16 @@ enum SupportFileBuilder<Syntax> {
       imports.registerImports(from: file, blame: "bags")
     }
 
-    for (_, _, _, file) in namedImplicitsWrappers {
-      imports.registerImports(from: file, blame: "named implicits wrappers")
+    for wrapper in namedImplicitsWrappers {
+      imports.registerImports(from: wrapper.file, blame: "named implicits wrappers")
     }
 
     let wrappers = namedImplicitsWrappers.map {
       SupportFile.NamedImplicitsWrapper(
         wrapperName: $0.wrapperName,
         closureParamCount: $0.closureParamCount,
-        requirements: $0.requirements
+        effects: $0.effects,
+        requirements: $0.resolution
       )
     }
 
