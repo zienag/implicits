@@ -64,6 +64,13 @@ This project follows **strict TDD**:
 - Integration tests are in `Sources/TestResources/test_data/` - check these for examples when implementing new features
 - Tests use inline annotations (e.g., `// expected-error`, `// expect-syntax:`) to specify expected behavior
 
+## File Organization
+
+- **Main type first**: The primary type of a file goes at the top. If a file is named `Foo.swift`, the `Foo` type should be at the top.
+- **Helper/utility types at the bottom**: Supporting structs, enums, extensions, and helper types go after the main type, not before it.
+- **Extensions of the main type**: Place extensions of the file's main type immediately after the main type definition.
+- **Extensions of other types**: Place extensions of unrelated types (like `DiagnosticMessage`) at the bottom.
+
 ## Important Constraints
 
 - Static analysis requires explicit type annotations (limited type inference)

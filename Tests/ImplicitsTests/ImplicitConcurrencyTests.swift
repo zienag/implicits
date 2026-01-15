@@ -62,7 +62,7 @@ struct ImplicitConcurrencyTests {
     let retrieved = await testMainActor(id: 81)
     #expect(retrieved == 81)
   }
-  
+
   @Test func childTasksScopesShouldBeIsolated() async {
     let cp = Checkpoint<Step>()
 

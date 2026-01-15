@@ -154,22 +154,26 @@ extension SupportFile {
         }
       }
 
-      let closureParamTypes: [String] = (0..<wrapper.closureParamCount)
-        .map { "A\($0 + 1)" } + ["ImplicitScope"]
-      let closureType = "(\(closureParamTypes.joined(separator: ", "))) -> T"
+      let closureType = FunctionTypeSyntax.wrapperType(
+        paramCount: wrapper.closureParamCount,
+        extraParam: "ImplicitScope",
+        effects: wrapper.effects
+      )
 
-      let returnParamTypes: [String] = (0..<wrapper.closureParamCount).map { "A\($0 + 1)" }
-      let returnType = returnParamTypes.isEmpty ? "() -> T" : "(\(returnParamTypes.joined(separator: ", "))) -> T"
+      let returnType = FunctionTypeSyntax.wrapperType(
+        paramCount: wrapper.closureParamCount,
+        effects: wrapper.effects
+      )
 
       let funcSignature = FunctionSignatureSyntax(
         parameterClause: FunctionParameterClauseSyntax(parameters: [
           FunctionParameterSyntax(
             firstName: "_",
             secondName: "body",
-            type: "@escaping \(raw: closureType)" as TypeSyntax
+            type: closureType.escaping()
           ),
         ]),
-        returnClause: ReturnClauseSyntax(type: "\(raw: returnType)" as TypeSyntax)
+        returnClause: ReturnClauseSyntax(type: returnType)
       )
 
       let funcName =
@@ -208,12 +212,14 @@ extension SupportFile {
             DeferStmtSyntax {
               FunctionCallExprSyntax(callee: "scope.end" as ExprSyntax)
             }
-            ReturnStmtSyntax(expression: FunctionCallExprSyntax(callee: "body" as ExprSyntax) {
-              for argName in argNames {
-                LabeledExprSyntax(expression: "\(raw: argName)" as ExprSyntax)
+            ReturnStmtSyntax(expression: wrapper.effects.wrapCall(
+              FunctionCallExprSyntax(callee: "body" as ExprSyntax) {
+                for argName in argNames {
+                  LabeledExprSyntax(expression: "\(raw: argName)" as ExprSyntax)
+                }
+                LabeledExprSyntax(expression: "scope" as ExprSyntax)
               }
-              LabeledExprSyntax(expression: "scope" as ExprSyntax)
-            })
+            ))
           }
         ))
       }
@@ -464,5 +470,38 @@ extension String {
     } else {
       self
     }
+  }
+}
+
+extension FunctionTypeSyntax {
+  static func wrapperType(
+    paramCount: Int,
+    extraParam: TokenSyntax? = nil,
+    effects: ClosureEffects
+  ) -> FunctionTypeSyntax {
+    FunctionTypeSyntax(
+      parameters: TupleTypeElementListSyntax {
+        for i in 0..<paramCount {
+          TupleTypeElementSyntax(type: IdentifierTypeSyntax(name: "A\(raw: i + 1)"))
+        }
+        if let extraParam {
+          TupleTypeElementSyntax(type: IdentifierTypeSyntax(name: extraParam))
+        }
+      },
+      effectSpecifiers: effects.effectSpecifiers,
+      returnClause: ReturnClauseSyntax(type: IdentifierTypeSyntax(name: "T"))
+    )
+  }
+}
+
+extension TypeSyntaxProtocol {
+  func escaping() -> AttributedTypeSyntax {
+    AttributedTypeSyntax(
+      specifiers: [],
+      attributes: AttributeListSyntax {
+        AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier("escaping")))
+      },
+      baseType: self
+    )
   }
 }

@@ -12,11 +12,13 @@ public struct RequirementsGraph<Syntax, File> {
     }
   }
 
+  typealias WrapperInfo<Resolution> = ImplicitsTool.WrapperInfo<Resolution, File>
+
   typealias Graph = OrderedGraph<Node, Void>
   var graph: Graph
   var entryPoints: [Graph.Index]
   var bags: [(Graph.Index, name: String, File)]
-  var namedImplicitsWrappers: [(Graph.Index, wrapperName: String, closureParamCount: Int, File)]
+  var namedImplicitsWrappers: [WrapperInfo<Graph.Index>]
   var publicInterface: [(Graph.Index, Symbol)]
   var testableInterface: [(Graph.Index, Symbol)]
   var implicitFunctions: [(Graph.Index, File, SemaTree<Syntax>.FuncDecl)]
@@ -26,12 +28,7 @@ extension RequirementsGraph {
   typealias Diagnostics = DiagnosticsGeneric<Syntax>
   struct ResolveRequirementsResult {
     var bags: [(name: String, requirements: [ImplicitKey], File)]
-    var namedImplicitsWrappers: [(
-      wrapperName: String,
-      closureParamCount: Int,
-      requirements: [ImplicitKey],
-      File
-    )]
+    var namedImplicitsWrappers: [WrapperInfo<[ImplicitKey]>]
     var publicInterface: [(Symbol, [ImplicitKey])]
     var testableInterface: [(Symbol, [ImplicitKey])]
     var implicitFunctions: [(SemaTree<Syntax>.FuncDecl, File, [ImplicitKey])]
@@ -55,14 +52,15 @@ extension RequirementsGraph {
       file: $0.2
     ) }
     let namedImplicitsWrappers = self.namedImplicitsWrappers
-      .map { idx, wrapperName, paramCount, file in
-        let reqs = resolveRequirements(from: idx, cache: &cache, path: [])
+      .map { wrapper in
+        let reqs = resolveRequirements(from: wrapper.resolution, cache: &cache, path: [])
           .sorted { $0.lexicographicalOrder < $1.lexicographicalOrder }
-        return (
-          wrapperName: wrapperName,
-          closureParamCount: paramCount,
-          requirements: reqs,
-          file: file
+        return WrapperInfo(
+          wrapperName: wrapper.wrapperName,
+          closureParamCount: wrapper.closureParamCount,
+          effects: wrapper.effects,
+          resolution: reqs,
+          file: wrapper.file
         )
       }
     let publicInterface = self.publicInterface.map { index, signature in
@@ -129,4 +127,12 @@ extension DiagnosticMessage {
       .sorted().joined(separator: ", ")
     return "Unresolved requirement\(reqs.count > 1 ? "s" : ""): \(reqString)"
   }
+}
+
+struct WrapperInfo<Resolution, File> {
+  var wrapperName: String
+  var closureParamCount: Int
+  var effects: ClosureEffects
+  var resolution: Resolution
+  var file: File
 }
