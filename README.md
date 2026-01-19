@@ -444,6 +444,14 @@ Similar patterns in other languages:
 - **Scala** — `given`/`using` (formerly implicit parameters)
 - **Kotlin** — Context receivers
 
+## Development
+
+To set up the pre-commit hook for SwiftFormat:
+
+```bash
+./scripts/setup-hooks.sh
+```
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
