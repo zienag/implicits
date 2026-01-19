@@ -1566,7 +1566,6 @@ extension Diagnostic.Location {
   }
 }
 
-
 // TODO: To base
 extension String {
   public init(_ staticString: StaticString) {
