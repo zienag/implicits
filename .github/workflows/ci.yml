@@ -31,4 +31,5 @@ jobs:
         run: swift build --target ShowcaseDependency --enable-experimental-prebuilts
 
       - name: Test Implicits for iOS
+        if: github.event_name == 'push'
         run: swift test --filter ImplicitsTests --sdk $(xcrun --sdk iphonesimulator --show-sdk-path) --triple arm64-apple-ios14.0-simulator --enable-experimental-prebuilts
