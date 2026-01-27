@@ -2,6 +2,10 @@
 
 Implicits is a Swift library for implicit parameter passing through call stacks, similar to implicit parameters in Scala or context receivers in Kotlin.
 
+## Usage Guide
+
+@AI_GUIDE.md
+
 ## Development Process
 
 ### TDD
@@ -14,6 +18,8 @@ Every bug fix, feature, or implementation must follow these steps in order:
 4. Verify the test passes
 
 If the test passes in step 2, either the bug doesn't exist or the test is wrong. The failing test tells you exactly what's broken and where. Without it, you're guessing — you'll waste time investigating why existing tests pass, make wrong assumptions, and "fix" things that weren't the problem.
+
+After implementing new features, keep `README.md` and `AI_GUIDE.md` up to date.
 
 ## Common Development Commands
 
