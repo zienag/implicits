@@ -81,13 +81,12 @@ enum SemaTreeBuilder<
     )
     context.symbols.addLookaheads(scouting.symbols.map(\.0))
     context.failedInitializers = .init(scouting.failedInitializers) { $0 + $1 }
-    let result = entities.flatMap {
+    return entities.flatMap {
       visit(
         topLevelEntity: $0,
         context: &context[topLevel: $0]
       )
     }
-    return result
   }
 
   fileprivate static func visit(
@@ -179,12 +178,11 @@ enum SemaTreeBuilder<
                 )
                 return nil
               }
-              let key = Sema.ImplicitKeyDecl(
+              return Sema.ImplicitKeyDecl(
                 name: name,
                 type: type.description,
                 visibility: visibility
               )
-              return key
             default:
               return nil
             }

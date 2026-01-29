@@ -1,7 +1,6 @@
 // Copyright 2023 Yandex LLC. All rights reserved.
 
 import Foundation
-
 import SwiftSyntax
 
 public enum StaticAnalysis {

@@ -1,17 +1,16 @@
 // Copyright 2023 Yandex LLC. All rights reserved.
 
-import Testing
-
 import ImplicitsToolMacros
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
+import Testing
 
 private let testMacros: [String: Macro.Type] = [
   "GeneralVisitorMacro": GeneralVisitorMacro.self,
 ]
 
 struct GeneralVisitorMacroTests {
-  @Test func generalVisitorFailOnClass() throws {
+  @Test func generalVisitorFailOnClass() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -25,7 +24,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorFailOnStructWithNoGeneric() throws {
+  @Test func generalVisitorFailOnStructWithNoGeneric() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -39,7 +38,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorFailOnStructWithMoreThanOneGeneric() throws {
+  @Test func generalVisitorFailOnStructWithMoreThanOneGeneric() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -53,7 +52,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnEmptyStructWithOneGeneric() throws {
+  @Test func generalVisitorSuccessOnEmptyStructWithOneGeneric() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -82,7 +81,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnEmptyStructWithOneGenericAndDifferentName() throws {
+  @Test func generalVisitorSuccessOnEmptyStructWithOneGenericAndDifferentName() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -111,7 +110,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnStructWithOneGenericAndNoVisitors() throws {
+  @Test func generalVisitorSuccessOnStructWithOneGenericAndNoVisitors() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -162,7 +161,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnStructWithOneGenericAndOneVisitor() throws {
+  @Test func generalVisitorSuccessOnStructWithOneGenericAndOneVisitor() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -224,7 +223,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnStructWithOneGenericAndTwoSameVisitors() throws {
+  @Test func generalVisitorSuccessOnStructWithOneGenericAndTwoSameVisitors() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -266,7 +265,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnStructWithOneGenericAndOneRandomVariable() throws {
+  @Test func generalVisitorSuccessOnStructWithOneGenericAndOneRandomVariable() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -315,7 +314,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnStructWithDifferentlyNamedGeneric() throws {
+  @Test func generalVisitorSuccessOnStructWithDifferentlyNamedGeneric() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -395,7 +394,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorSuccessOnStructWithDifferentlyNamedVisitorAlias() throws {
+  @Test func generalVisitorSuccessOnStructWithDifferentlyNamedVisitorAlias() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro
@@ -475,7 +474,7 @@ struct GeneralVisitorMacroTests {
     )
   }
 
-  @Test func generalVisitorCorrectForm() throws {
+  @Test func generalVisitorCorrectForm() {
     assertMacroExpansion(
       """
       @GeneralVisitorMacro

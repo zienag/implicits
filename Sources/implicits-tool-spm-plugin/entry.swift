@@ -1,7 +1,6 @@
 // Copyright 2025 Yandex LLC. All rights reserved.
 
 import Foundation
-
 import ImplicitsTool
 import SwiftBasicFormat
 import SwiftParser

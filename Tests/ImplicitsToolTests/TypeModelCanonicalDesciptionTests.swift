@@ -1,10 +1,9 @@
 // Copyright 2024 Yandex LLC. All rights reserved.
 
-import Testing
-
 import ImplicitsTool
 import SwiftParser
 import SwiftSyntax
+import Testing
 
 struct TypeModelCanonicalDesciptionTests {
   @Test func simple() {

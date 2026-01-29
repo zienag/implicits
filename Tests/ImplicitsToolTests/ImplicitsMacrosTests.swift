@@ -1,10 +1,9 @@
 // Copyright 2023 Yandex LLC. All rights reserved.
 
-import Testing
-
 import ImplicitsMacros
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
+import Testing
 
 private let testMacros: [String: Macro.Type] = [
   "implicits": ImplicitMacro.self,
@@ -12,7 +11,7 @@ private let testMacros: [String: Macro.Type] = [
 ]
 
 struct ImplicitMacroTests {
-  @Test func implicitMacro() throws {
+  @Test func implicitMacro() {
     assertMacroExpansion(
       """
       let c = { [implictis = #implicits] in 42 }
@@ -25,7 +24,7 @@ struct ImplicitMacroTests {
     )
   }
 
-  @Test func withImplicitsMacro() throws {
+  @Test func withImplicitsMacro() {
     assertMacroExpansion(
       """
       let c = #withImplicits { _ in 42 }

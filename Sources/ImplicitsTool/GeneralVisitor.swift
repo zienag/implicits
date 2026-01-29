@@ -56,9 +56,9 @@ struct GeneralVisitor<State>: @unchecked Sendable {
 }
 
 extension GeneralVisitor.StatefulSyntaxVisitor {
-  fileprivate func visitGeneral<S>(
+  fileprivate func visitGeneral<S: SyntaxProtocol>(
     _ visitor: GeneralVisitor.Visitor<S>, _ node: S
-  ) -> SyntaxVisitorContinueKind where S: SyntaxProtocol {
+  ) -> SyntaxVisitorContinueKind {
     let continuation = visitor(&state, node)
     switch continuation {
     case .skipChildren:

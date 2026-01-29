@@ -31,7 +31,7 @@ struct ImplicitConcurrencyTests {
     #expect(retrieved == 42)
   }
 
-  @Test func nonisolatedActorFunction() async {
+  @Test func nonisolatedActorFunction() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -157,9 +157,7 @@ actor SomeActor {
   init(_: ImplicitScope) {}
 
   func testActorImplicit(_ scope: ImplicitScope) async -> Int {
-    let retrieved = await asyncGetId(scope)
-
-    return retrieved
+    await asyncGetId(scope)
   }
 
   func createRootScope(id given: Int) async -> Int {
@@ -169,9 +167,7 @@ actor SomeActor {
     @Implicit(\.id)
     var id = given
 
-    let retrieved = await testActorImplicit(scope)
-
-    return retrieved
+    return await testActorImplicit(scope)
   }
 
   func getStoredId() -> Int {

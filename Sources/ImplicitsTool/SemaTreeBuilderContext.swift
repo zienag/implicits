@@ -453,10 +453,9 @@ extension SemaTreeBuilder.Context {
           .diagnose("[WIP] Call as function is not supported yet", at: syntax)
         return []
       }
-      let resolvedMembers = symbols.match(.member(
+      return symbols.match(.member(
         name: memberFunctionName, namespace: namespace.value, args: args
       ))
-      return resolvedMembers
     }
 
     var notes = [PreDiagnostic<Syntax>]()
