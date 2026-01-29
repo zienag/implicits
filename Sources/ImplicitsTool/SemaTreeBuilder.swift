@@ -1729,5 +1729,5 @@ extension DiagnosticMessage {
   fileprivate static let withImplicitsRequiresClosureWithScope: Self =
     "#withImplicits requires a closure with at least a scope parameter"
   fileprivate static let withImplicitsLastParamMustBeScope: Self =
-    "#withImplicits closure's last parameter must be of type ImplicitScope"
+    "#withImplicits closure's last parameter must be named 'scope' or '_'"
 }

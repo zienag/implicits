@@ -1,6 +1,5 @@
 // Copyright 2023 Yandex LLC. All rights reserved.
 
-import Foundation
 import ImplicitsShared
 import MacroUtils
 import SwiftCompilerPlugin
@@ -15,6 +14,7 @@ public struct ImplicitMacro: ExpressionMacro {
     in context: some MacroExpansionContext
   ) throws -> ExprSyntax {
     let loc = try SourceLocation(of: node, in: context)
+    try loc.checkNotInMacroExpansion("implicits")
     let funcName = generateImplicitBagFuncName(
       filename: loc.fileName,
       line: loc.line,
@@ -30,6 +30,7 @@ public struct WithImplicitsMacro: ExpressionMacro {
     in context: some MacroExpansionContext
   ) throws -> ExprSyntax {
     let loc = try SourceLocation(of: node, in: context)
+    try loc.checkNotInMacroExpansion("withImplicits")
 
     // Get the closure argument (either as argument or trailing closure)
     let closure: ClosureExprSyntax
