@@ -33,7 +33,34 @@ private func underscoreScope() {
   }
 }
 
+private func parenthesizedSyntax() {
+  // expected-error@+1 {{Unresolved requirement: Int16}}
+  let scope = ImplicitScope()
+  defer { scope.end() }
+
+  _ = #withImplicits({ scope in
+    @Implicit() var v1: Int16
+  })
+}
+
+// Type inference fails for macro-expanded closures with capture lists
+// https://github.com/swiftlang/swift/issues/86871
+#if NO_COMPILE
+private func withCaptureList() {
+  // expected-error@+1 {{Unresolved requirement: Int32}}
+  let scope = ImplicitScope()
+  defer { scope.end() }
+
+  let x = 42
+  _ = #withImplicits { [x] scope in
+    @Implicit() var v1: Int32
+    return x
+  }
+}
+#endif
+
 private func __implicit_wrap_with_implicits_macro_swift_9_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
 private func __implicit_wrap_with_implicits_macro_swift_13_7<A1, A2, T>(_ body: @escaping (A1, A2, ImplicitScope) -> T) -> (A1, A2) -> T { fatalError() }
 private func __implicit_wrap_with_implicits_macro_swift_21_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
 private func __implicit_wrap_with_implicits_macro_swift_31_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
+private func __implicit_wrap_with_implicits_macro_swift_41_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }

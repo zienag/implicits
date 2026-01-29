@@ -437,6 +437,12 @@ extension ExprSyntax: SyntaxDescriptionProvider {
     case let .macroExpansionExpr(e):
       .macroExpansion(.init(
         name: e.macroName.text,
+        arguments: e.arguments.map { arg in
+          .init(
+            value: arg.expression.syntaxDescription(context: context),
+            syntax: Syntax(arg.expression)
+          )
+        },
         trailingClosure: e.trailingClosure.map {
           .init(
             value: $0.syntaxDescription(context: context),
@@ -494,6 +500,12 @@ extension MacroExpansionExprSyntax: SyntaxDescriptionProvider {
   fileprivate func syntaxDescription(context: Context) -> SXT.MacroExpansion {
     .init(
       name: macroName.text,
+      arguments: arguments.map { arg in
+        .init(
+          value: arg.expression.syntaxDescription(context: context),
+          syntax: Syntax(arg.expression)
+        )
+      },
       trailingClosure: trailingClosure.map {
         .init(
           value: $0.syntaxDescription(context: context),

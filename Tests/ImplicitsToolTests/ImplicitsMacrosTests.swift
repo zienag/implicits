@@ -36,4 +36,45 @@ struct ImplicitMacroTests {
       macros: testMacros
     )
   }
+
+  @Test func withImplicitsMacroParenthesizedSyntax() {
+    assertMacroExpansion(
+      """
+      let c = #withImplicits({ _ in 42 })
+      """,
+      expandedSource: """
+      let c = __implicit_wrap_test_swift_1_9({ _ in 42 })
+      """,
+      diagnostics: [],
+      macros: testMacros
+    )
+  }
+
+  @Test func withImplicitsMacroNonClosureArgument() {
+    assertMacroExpansion(
+      """
+      let c = #withImplicits(someVariable)
+      """,
+      expandedSource: """
+      let c = #withImplicits(someVariable)
+      """,
+      diagnostics: [
+        DiagnosticSpec(message: "#withImplicits requires a closure argument", line: 1, column: 9)
+      ],
+      macros: testMacros
+    )
+  }
+
+  @Test func withImplicitsMacroWithCaptureList() {
+    assertMacroExpansion(
+      """
+      let c = #withImplicits({ [weak self] scope in 42 })
+      """,
+      expandedSource: """
+      let c = __implicit_wrap_test_swift_1_9({ [weak self] scope in 42 })
+      """,
+      diagnostics: [],
+      macros: testMacros
+    )
+  }
 }
