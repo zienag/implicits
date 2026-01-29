@@ -31,10 +31,9 @@ func currentTaskID() -> ObjectIdentifier? {
   else { return nil }
   let classTask = unsafeBitCast(task, to: UnmanagedAsyncTaskWrapper.self)
   let unmanagedTask = Unmanaged.passRetained(classTask)
-  let id = unsafeBitCast(
+  return unsafeBitCast(
     unmanagedTask.takeUnretainedValue(), to: ObjectIdentifier.self
   )
-  return id
 }
 
 private protocol BuiltinRawPointerTypeExtractor {

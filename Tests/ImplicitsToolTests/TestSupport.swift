@@ -2,12 +2,10 @@
 // Copyright 2024 Yandex LLC. All rights reserved.
 
 @testable import ImplicitsTool
-
-import Testing
-
 import SwiftBasicFormat
 import SwiftParser
 import SwiftSyntax
+import Testing
 import TestResources
 
 func verify(
@@ -183,7 +181,7 @@ private func expectedDiagnosticsInFile(
   sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) -> [Diagnostic] {
   let lines = source.split(separator: "\n", omittingEmptySubsequences: false)
-  let errors = lines.enumerated().flatMap { idx, line -> [Diagnostic] in
+  return lines.enumerated().flatMap { idx, line -> [Diagnostic] in
     line.matches(of: expectedDiagRegex).compactMap { match in
       guard let severity = Diagnostic.Severity(match.output.severity) else {
         Issue.record(
@@ -216,7 +214,6 @@ private func expectedDiagnosticsInFile(
       )
     }
   }
-  return errors
 }
 
 func expectedKeyDeclarationsInFile(
@@ -396,11 +393,11 @@ extension SyntaxVerifier {
   static var annotationPrefix: String { "expect-syntax:" }
 }
 
-func verifySyntax<V: SyntaxVerifier>(
+func verifySyntax<V: SyntaxVerifier & Sendable>(
   file: String,
   using _: V.Type,
   sourceLocation: Testing.SourceLocation = #_sourceLocation
-) where V: Sendable {
+) {
   let verifier = V()
   let source = TestSupport.readFile(file)
   let tree = Parser.parse(source: source)

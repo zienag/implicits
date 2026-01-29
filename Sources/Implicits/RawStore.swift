@@ -178,8 +178,7 @@ internal final class RawStore: @unchecked Sendable {
       guard let ptr = pthread_getspecific(key) else {
         return nil
       }
-      let store = Unmanaged<Self>.fromOpaque(ptr).takeUnretainedValue()
-      return store
+      return Unmanaged<Self>.fromOpaque(ptr).takeUnretainedValue()
     }
   }
 

@@ -58,7 +58,7 @@ struct SerializationTests {
   @Test func emptyStringFollowedByDataWrite() throws {
     let stream = OutputStream.toMemory()
     try FileWriter(stream: stream).withStream { try ["", "after"].serialize(to: &$0) }
-    let data = stream.property(forKey: .dataWrittenToMemoryStreamKey) as! Data
+    let data = try #require(stream.property(forKey: .dataWrittenToMemoryStreamKey) as? Data)
     var input = InMemoryInputByteStream(Array(data))
     #expect(try [String](from: &input) == ["", "after"])
   }

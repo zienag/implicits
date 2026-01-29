@@ -6,6 +6,10 @@
 --disable redundantSelf
 --disable wrapLoopBodies
 --disable wrapMultilineStatementBraces
+--disable wrapPropertyBodies
+--disable docComments
+--disable redundantMemberwiseInit
+--disable wrapFunctionBodies
 
 --enable wrapMultilineConditionalAssignment
 --enable blockComments

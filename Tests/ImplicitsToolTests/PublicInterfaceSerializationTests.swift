@@ -1,8 +1,7 @@
 // Copyright 2024 Yandex LLC. All rights reserved.
 
-import Testing
-
 import ImplicitsTool
+import Testing
 
 struct PublicInterfaceSerializationTests {
   @Test func symbolSerialization() {

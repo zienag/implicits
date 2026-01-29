@@ -8,7 +8,7 @@ import SwiftParser
 import SwiftSyntax
 
 struct IfConfigTests {
-  @Test func `evaluateCondition evaluates #if conditions`() throws {
+  @Test func `evaluateCondition evaluates #if conditions`() {
     func check(_ e: String, _ expected: Bool?) {
       var parser = Parser(e)
       let e = ExprSyntax.parse(from: &parser)
