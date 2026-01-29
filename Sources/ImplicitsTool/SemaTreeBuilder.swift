@@ -1023,12 +1023,14 @@ enum SemaTreeBuilder<
     syntax: Syntax,
     context: inout Context
   ) -> [CodeBlockItem] {
-    guard macro.name == ImplicitKeyword.Macro.withImplicits,
-          let trailingClosure = macro.trailingClosure else {
+    guard
+      macro.name == ImplicitKeyword.Macro.withImplicits,
+      let closureEntity = macro.singleClosureArgument
+    else {
       return []
     }
 
-    let closure = trailingClosure.value
+    let closure = closureEntity.value
     guard let params = closure.parameters, !params.isEmpty else {
       context.diagnose(.withImplicitsRequiresClosureWithScope, at: syntax)
       return []
@@ -1513,6 +1515,18 @@ extension SyntaxTree.FunctionCall {
 extension SyntaxTree.ClosureParameter {
   var isImplicitScope: Bool {
     name.value.isWildcard || name.value.literal == ImplicitKeyword.Scope.variableName
+  }
+}
+
+extension SyntaxTree.MacroExpansion {
+  var singleClosureArgument: SyntaxTree.Entity<SyntaxTree.ClosureExpr>? {
+    if let trailing = trailingClosure {
+      return trailing
+    }
+    if let arg = arguments.singleElement, case let .closure(expr) = arg.value {
+      return .init(value: expr, syntax: arg.syntax)
+    }
+    return nil
   }
 }
 

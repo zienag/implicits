@@ -162,6 +162,7 @@ public enum SyntaxTree<Syntax> {
 
   public struct MacroExpansion {
     public var name: String
+    public var arguments: [Entity<Expression>]
     public var trailingClosure: Entity<ClosureExpr>?
   }
 
@@ -774,6 +775,7 @@ extension SyntaxTree.MacroExpansion {
   func mapSyntax<S>(_ t: (Syntax) -> S) -> SyntaxTree<S>.MacroExpansion {
     .init(
       name: name,
+      arguments: arguments.map { $0.map(t, ST.Expression.mapSyntax) },
       trailingClosure: trailingClosure?.map(t, ST.ClosureExpr.mapSyntax)
     )
   }
