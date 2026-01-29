@@ -74,6 +74,11 @@ The macro automatically infers `async` and `throws` from the closure body:
 #withImplicits { scope async throws in ... }
 ```
 
+### Limitations
+
+- **No capture lists:** Due to a [Swift compiler bug](https://github.com/swiftlang/swift/issues/86871), closures with capture lists like `[weak self]` won't compile. Use [Named Wrappers](#named-wrappers-withNameimplicits) instead.
+- **No nested macro usage:** `#withImplicits` and `#implicits` cannot be used inside another macro expansion. Source locations inside macro-generated code resolve to synthetic contexts that the static analyzer cannot correlate with macro-generated function names.
+
 ## Named Wrappers: `with${Name}Implicits`
 
 If your project prefers not to use macros, you can use wrapper functions that follow a naming convention. The analyzer recognizes functions matching `with${Name}Implicits`:
