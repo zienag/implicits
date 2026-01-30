@@ -20,7 +20,7 @@ public struct SupportFile {
   public struct NamedImplicitsWrapper {
     public var wrapperName: String
     public var closureParamCount: Int
-    public var effects: ClosureEffects
+    public var effects: ClosureEffects<Void>
     public var requirements: [ImplicitKey]
   }
 

@@ -832,7 +832,11 @@ enum SemaTreeBuilder<
     // withFooImplicits { scope in ... }
     if let (wrapperName, closureParamCount, closure, scopeArg) = functionCall
       .isWithNamedImplicits() {
-      let effects = ClosureEffects(isAsync: closure.isAsync, isThrowing: closure.isThrowing)
+      let effects = ClosureEffects(
+        isAsync: closure.isAsync,
+        isThrowing: closure.isThrowing,
+        typeAttributes: closure.typeAttributes
+      )
       let body = visit(
         codeBlockEntities: closure.body,
         context: &context[withScope: closure, scopeParamter: scopeArg]
@@ -1046,7 +1050,11 @@ enum SemaTreeBuilder<
     // closureParamCount is all params except the scope
     let closureParamCount = params.count - 1
 
-    let effects = ClosureEffects(isAsync: closure.isAsync, isThrowing: closure.isThrowing)
+    let effects = ClosureEffects(
+      isAsync: closure.isAsync,
+      isThrowing: closure.isThrowing,
+      typeAttributes: closure.typeAttributes
+    )
     let body = visit(
       codeBlockEntities: closure.body,
       context: &context[withScope: closure, scopeParamter: lastParam.name.syntax]

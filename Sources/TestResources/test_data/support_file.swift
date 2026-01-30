@@ -63,6 +63,20 @@ private func withImplicits(_: ImplicitScope) {
     requires(scope)
   }
 
+  // @MainActor wrapper
+  _ = withMainActorImplicits { @MainActor scope in
+    requires(scope)
+  }
+
+  #if NO_COMPILE
+  // Generic closure wrappers lose type attributes,
+  // no way to parameterize over them.
+  // See https://forums.swift.org/t/84482
+  _ = #withImplicits { @MainActor scope in
+    requires(scope)
+  }
+  #endif
+
   // #withImplicits macro
   _ = #withImplicits { scope in
     requires(scope)

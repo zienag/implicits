@@ -154,16 +154,18 @@ extension SupportFile {
         }
       }
 
+      let typeAttrs = wrapper.effects.typeAttributesSyntax
+
       let closureType = FunctionTypeSyntax.wrapperType(
         paramCount: wrapper.closureParamCount,
         extraParam: "ImplicitScope",
         effects: wrapper.effects
-      )
+      ).withTypeAttributes(typeAttrs)
 
       let returnType = FunctionTypeSyntax.wrapperType(
         paramCount: wrapper.closureParamCount,
         effects: wrapper.effects
-      )
+      ).withTypeAttributes(typeAttrs)
 
       let funcSignature = FunctionSignatureSyntax(
         parameterClause: FunctionParameterClauseSyntax(parameters: [
@@ -474,7 +476,7 @@ extension FunctionTypeSyntax {
   static func wrapperType(
     paramCount: Int,
     extraParam: TokenSyntax? = nil,
-    effects: ClosureEffects
+    effects: ClosureEffects<Void>
   ) -> FunctionTypeSyntax {
     FunctionTypeSyntax(
       parameters: TupleTypeElementListSyntax {
@@ -492,6 +494,14 @@ extension FunctionTypeSyntax {
 }
 
 extension TypeSyntaxProtocol {
+  func withTypeAttributes(_ attrs: AttributeListSyntax) -> AttributedTypeSyntax {
+    AttributedTypeSyntax(
+      specifiers: [],
+      attributes: attrs,
+      baseType: self
+    )
+  }
+
   func escaping() -> AttributedTypeSyntax {
     AttributedTypeSyntax(
       specifiers: [],
