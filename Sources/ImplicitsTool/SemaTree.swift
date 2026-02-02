@@ -75,7 +75,8 @@ enum SemaTree<Syntax> {
     case implicitScopeEnd
     case withScope(nested: Bool, withBag: Bool, body: [CodeBlockItem])
     case withNamedImplicits(
-      wrapperName: String, closureParamCount: Int, effects: ClosureEffects, body: [CodeBlockItem]
+      wrapperName: String, closureParamCount: Int,
+      effects: ClosureEffects<Syntax>, body: [CodeBlockItem]
     )
     case implicitMap(from: ImplicitKey, to: ImplicitKey)
     case implicit(Implicit)
@@ -261,7 +262,7 @@ extension SemaTree.CodeBlockItemNode {
       .withNamedImplicits(
         wrapperName: name,
         closureParamCount: count,
-        effects: effects,
+        effects: effects.mapSyntax(transform),
         body: body.map { $0.mapSyntax(transform) }
       )
     case let .implicitMap(from: from, to: to):

@@ -322,6 +322,13 @@ extension FunctionSignatureSyntax {
 }
 
 extension ClosureSignatureSyntax {
+  fileprivate func parsedTypeAttributes(context: Context) -> [SXT.TypeModel] {
+    attributes.compactMap { element -> SXT.TypeModel? in
+      guard case let .attribute(attribute) = element else { return nil }
+      return attribute.attributeName.parsedType(context: context)
+    }
+  }
+
   fileprivate func parsedParameters(
     context: Context
   ) -> [SXT.ClosureParameter]? {
@@ -407,7 +414,8 @@ extension ClosureExprSyntax: SyntaxDescriptionProvider {
     .init(
       captures: signature?.capture?.syntaxDescription(context: context),
       parameters: signature?.parsedParameters(context: context),
-      body: statements.syntaxDescription(context: context)
+      body: statements.syntaxDescription(context: context),
+      typeAttributes: signature?.parsedTypeAttributes(context: context) ?? []
     )
   }
 }

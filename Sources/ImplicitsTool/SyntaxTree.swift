@@ -200,6 +200,7 @@ public enum SyntaxTree<Syntax> {
     public var captures: [Capture]?
     public var parameters: Parameters?
     public var body: [CodeBlockEntity]
+    public var typeAttributes: [TypeModel]
   }
 
   /// Represents defer statement
@@ -786,7 +787,8 @@ extension SyntaxTree.ClosureExpr {
     .init(
       captures: captures?.map { $0.map(t, ST.ClosureExpr.CaptureDescription.mapSyntax) },
       parameters: parameters?.map { $0.mapSyntax(t) },
-      body: body.map { $0.map(t, ST.CodeBlockStatement.mapSyntax) }
+      body: body.map { $0.map(t, ST.CodeBlockStatement.mapSyntax) },
+      typeAttributes: typeAttributes.map { $0.mapSyntax(t) }
     )
   }
 }

@@ -3,7 +3,7 @@
 enum SupportFileBuilder<Syntax> {
   typealias Diagnostics = DiagnosticsGeneric<Syntax>
   typealias SyntaxTreeFile = (name: String, content: [SyntaxTree<SyntaxInfo>.TopLevelEntity])
-  typealias ResolvedWrapperInfo = WrapperInfo<[ImplicitKey], SyntaxTreeFile>
+  typealias ResolvedWrapperInfo = WrapperInfo<[ImplicitKey], SyntaxTreeFile, Syntax>
 
   private typealias ImplicitParameter = SupportFile.ImplicitParameter
 
@@ -139,7 +139,7 @@ enum SupportFileBuilder<Syntax> {
       SupportFile.NamedImplicitsWrapper(
         wrapperName: $0.wrapperName,
         closureParamCount: $0.closureParamCount,
-        effects: $0.effects,
+        effects: $0.effects.mapSyntax { _ in },
         requirements: $0.resolution
       )
     }

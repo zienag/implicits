@@ -12,7 +12,7 @@ public struct RequirementsGraph<Syntax, File> {
     }
   }
 
-  typealias WrapperInfo<Resolution> = ImplicitsTool.WrapperInfo<Resolution, File>
+  typealias WrapperInfo<Resolution> = ImplicitsTool.WrapperInfo<Resolution, File, Syntax>
 
   typealias Graph = OrderedGraph<Node, Void>
   var graph: Graph
@@ -129,10 +129,10 @@ extension DiagnosticMessage {
   }
 }
 
-struct WrapperInfo<Resolution, File> {
+struct WrapperInfo<Resolution, File, Syntax> {
   var wrapperName: String
   var closureParamCount: Int
-  var effects: ClosureEffects
+  var effects: ClosureEffects<Syntax>
   var resolution: Resolution
   var file: File
 }
