@@ -160,10 +160,16 @@ public enum SyntaxTree<Syntax> {
     indirect case `try`(Expression, questionOrExclamation: Bool)
   }
 
+  public struct LabeledTrailingClosure {
+    public var label: String
+    public var closure: Entity<ClosureExpr>
+  }
+
   public struct MacroExpansion {
     public var name: String
     public var arguments: [Entity<Expression>]
     public var trailingClosure: Entity<ClosureExpr>?
+    public var additionalTrailingClosures: [LabeledTrailingClosure]
   }
 
   /// Represents initializer declaration
@@ -260,6 +266,7 @@ public enum SyntaxTree<Syntax> {
     public var name: Entity<TypeModel>?
     public var arguments: [Argument]
     public var trailingClosure: Entity<ClosureExpr>?
+    public var additionalTrailingClosures: [LabeledTrailingClosure]
     public var baseExprs: [CodeBlockEntity]
   }
 
@@ -772,12 +779,22 @@ extension SyntaxTree.Expression {
   }
 }
 
+extension SyntaxTree.LabeledTrailingClosure {
+  func mapSyntax<S>(_ t: (Syntax) -> S) -> SyntaxTree<S>.LabeledTrailingClosure {
+    .init(
+      label: label,
+      closure: closure.map(t, ST.ClosureExpr.mapSyntax)
+    )
+  }
+}
+
 extension SyntaxTree.MacroExpansion {
   func mapSyntax<S>(_ t: (Syntax) -> S) -> SyntaxTree<S>.MacroExpansion {
     .init(
       name: name,
       arguments: arguments.map { $0.map(t, ST.Expression.mapSyntax) },
-      trailingClosure: trailingClosure?.map(t, ST.ClosureExpr.mapSyntax)
+      trailingClosure: trailingClosure?.map(t, ST.ClosureExpr.mapSyntax),
+      additionalTrailingClosures: additionalTrailingClosures.map { $0.mapSyntax(t) }
     )
   }
 }
@@ -846,6 +863,7 @@ extension SyntaxTree.FunctionCall {
       name: name.map { $0.map(t, ST.TypeModel.mapSyntax) },
       arguments: arguments.map { $0.mapSyntax(t) },
       trailingClosure: trailingClosure?.map(t, ST.ClosureExpr.mapSyntax),
+      additionalTrailingClosures: additionalTrailingClosures.map { $0.mapSyntax(t) },
       baseExprs: baseExprs.map { $0.map(t, ST.CodeBlockStatement.mapSyntax) }
     )
   }

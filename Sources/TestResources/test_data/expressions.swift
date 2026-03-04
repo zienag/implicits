@@ -39,6 +39,24 @@ private struct LazyFields {
   }()
 }
 
+// MARK: - Multiple trailing closures
+
+private func multipleTrailingClosures() {
+  multipleTrailingClosuresHelper {
+    // expected-error@+1 {{Unresolved requirement: UInt8}}
+    let scope = ImplicitScope()
+    defer { scope.end() }
+    @Implicit() var v: UInt8
+  } second: {
+    // expected-error@+1 {{Unresolved requirement: UInt16}}
+    let scope = ImplicitScope()
+    defer { scope.end() }
+    @Implicit() var v: UInt16
+  }
+}
+
+// MARK: - Helpers
+
 private struct F1 {}
 private func f1(_: ImplicitScope) -> F1 {
   @Implicit()
@@ -103,3 +121,4 @@ private func f8(_: ImplicitScope) -> Int {
   return 1
 }
 
+private func multipleTrailingClosuresHelper(first: () -> Void, second: () -> Void) {}

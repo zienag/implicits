@@ -899,6 +899,12 @@ enum SemaTreeBuilder<
       return .item(.closureExpression(expr), at: $0.syntax)
     } ?? []
 
+    let additionalTrailingClosures: [CodeBlockItem] = functionCall.additionalTrailingClosures
+      .flatMap { labeled -> [CodeBlockItem] in
+        let expr = visit(closure: labeled.closure.value, context: &context)
+        return .item(.closureExpression(expr), at: labeled.closure.syntax)
+      }
+
     // Implicit.map
     if let base, base.description == ImplicitKeyword.Annotation.implicit,
        name?.value.description == ImplicitKeyword.Map.functionName {
@@ -956,7 +962,7 @@ enum SemaTreeBuilder<
     ) + visit(
       codeBlockEntities: functionCall.baseExprs,
       context: &context
-    ) + trailingClosure
+    ) + trailingClosure + additionalTrailingClosures
 
     // foo(scope)
     if context.hasImplicitScopeVariableInScope,
@@ -1048,22 +1054,28 @@ enum SemaTreeBuilder<
     syntax: Syntax,
     context: inout Context
   ) -> [CodeBlockItem] {
+    let additionalTrailingClosures: [CodeBlockItem] = macro.additionalTrailingClosures
+      .flatMap { labeled -> [CodeBlockItem] in
+        let expr = visit(closure: labeled.closure.value, context: &context)
+        return .item(.closureExpression(expr), at: labeled.closure.syntax)
+      }
+
     guard
       macro.name == ImplicitKeyword.Macro.withImplicits,
       let closureEntity = macro.singleClosureArgument
     else {
-      return []
+      return additionalTrailingClosures
     }
 
     let closure = closureEntity.value
     guard let params = closure.parameters, !params.isEmpty else {
       context.diagnose(.withImplicitsRequiresClosureWithScope, at: syntax)
-      return []
+      return additionalTrailingClosures
     }
 
     guard let lastParam = params.last, lastParam.isImplicitScope else {
       context.diagnose(.withImplicitsLastParamMustBeScope, at: syntax)
-      return []
+      return additionalTrailingClosures
     }
 
     let wrapperName = SyntaxInfo.location(of: syntax).implicitWrapFuncName()
