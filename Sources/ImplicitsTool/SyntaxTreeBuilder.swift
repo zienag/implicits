@@ -443,21 +443,7 @@ extension ExprSyntax: SyntaxDescriptionProvider {
     case let .closureExpr(e):
       .closure(e.syntaxDescription(context: context))
     case let .macroExpansionExpr(e):
-      .macroExpansion(.init(
-        name: e.macroName.text,
-        arguments: e.arguments.map { arg in
-          .init(
-            value: arg.expression.syntaxDescription(context: context),
-            syntax: Syntax(arg.expression)
-          )
-        },
-        trailingClosure: e.trailingClosure.map {
-          .init(
-            value: $0.syntaxDescription(context: context),
-            syntax: Syntax($0)
-          )
-        }
-      ))
+      .macroExpansion(e.syntaxDescription(context: context))
     case let .declReferenceExpr(e):
       .declRef(
         e.baseName.text,
@@ -518,6 +504,12 @@ extension MacroExpansionExprSyntax: SyntaxDescriptionProvider {
         .init(
           value: $0.syntaxDescription(context: context),
           syntax: Syntax($0)
+        )
+      },
+      additionalTrailingClosures: additionalTrailingClosures.map { element in
+        SXT.LabeledTrailingClosure(
+          label: element.label.text,
+          closure: element.closure.entityDescription(context: context)
         )
       }
     )
@@ -626,6 +618,12 @@ extension FunctionCallExprSyntax: SyntaxDescriptionProvider {
       name: calledType.map { SXT.Entity(value: $0.head, syntax: self) },
       arguments: arguments.parsedArguments(context: context),
       trailingClosure: trailingClosure.map { $0.entityDescription(context: context) },
+      additionalTrailingClosures: additionalTrailingClosures.map { element in
+        SXT.LabeledTrailingClosure(
+          label: element.label.text,
+          closure: element.closure.entityDescription(context: context)
+        )
+      },
       baseExprs: context.codeBlockVisitor()
         .walk(initial: ([], context), syntax: calledExpression).sxt
     )
