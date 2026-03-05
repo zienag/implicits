@@ -11,6 +11,18 @@ if ! command -v swiftformat &> /dev/null; then
   exit 1
 fi
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+VERSION_FILE="$REPO_ROOT/.swiftformat-version"
+if [ -f "$VERSION_FILE" ]; then
+  EXPECTED=$(tr -d '[:space:]' < "$VERSION_FILE")
+  LOCAL=$(swiftformat --version)
+  if [ "$LOCAL" != "$EXPECTED" ]; then
+    echo "warning: swiftformat version mismatch (local: $LOCAL, expected: $EXPECTED)"
+    echo "  Run: brew install swiftformat"
+    echo ""
+  fi
+fi
+
 if ! swiftformat --lint $STAGED_FILES; then
   echo ""
   echo "Fix with: swiftformat ."

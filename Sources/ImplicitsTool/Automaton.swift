@@ -87,7 +87,7 @@ public struct Automaton<T: Hashable, Value> {
         }
       }
     }
-    var previous: Set<Int> = [0]
+    var previous: Set = [0]
     addPatternRecursively(pattern, previous: &previous)
     for node in previous {
       store[node].values.append(value)

@@ -11,7 +11,7 @@ private let testMacros: [String: Macro.Type] = [
 ]
 
 struct ImplicitMacroTests {
-  @Test func implicitMacro() {
+  @Test func `implicit macro`() {
     assertMacroExpansion(
       """
       let c = { [implictis = #implicits] in 42 }
@@ -24,7 +24,7 @@ struct ImplicitMacroTests {
     )
   }
 
-  @Test func withImplicitsMacro() {
+  @Test func `with implicits macro`() {
     assertMacroExpansion(
       """
       let c = #withImplicits { _ in 42 }
@@ -37,7 +37,7 @@ struct ImplicitMacroTests {
     )
   }
 
-  @Test func withImplicitsMacroParenthesizedSyntax() {
+  @Test func `with implicits macro parenthesized syntax`() {
     assertMacroExpansion(
       """
       let c = #withImplicits({ _ in 42 })
@@ -50,7 +50,7 @@ struct ImplicitMacroTests {
     )
   }
 
-  @Test func withImplicitsMacroNonClosureArgument() {
+  @Test func `with implicits macro non closure argument`() {
     assertMacroExpansion(
       """
       let c = #withImplicits(someVariable)
@@ -65,7 +65,7 @@ struct ImplicitMacroTests {
     )
   }
 
-  @Test func withImplicitsMacroWithCaptureList() {
+  @Test func `with implicits macro with capture list`() {
     assertMacroExpansion(
       """
       let c = #withImplicits({ [weak self] scope in 42 })

@@ -2,7 +2,7 @@
 import Testing
 
 struct WithScopeTests {
-  @Test func scopeBasics() {
+  @Test func `scope basics`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -29,7 +29,7 @@ struct WithScopeTests {
     #expect(value == 42)
   }
 
-  @Test func scopeThrows() {
+  @Test func `scope throws`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -49,7 +49,7 @@ struct WithScopeTests {
     }
   }
 
-  @Test func scopeNesting() {
+  @Test func `scope nesting`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -92,7 +92,7 @@ struct WithScopeTests {
     }
   }
 
-  @Test func scopeWithBag() {
+  @Test func `scope with bag`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -140,7 +140,7 @@ struct WithScopeTests {
     }
   }
 
-  @Test func scopeWithStoredBag() {
+  @Test func `scope with stored bag`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -165,7 +165,7 @@ struct WithScopeTests {
     #expect(launchID == 999)
   }
 
-  @Test func asyncScopeConcurrentIsolation() async {
+  @Test func `async scope concurrent isolation`() async {
     // Test that concurrent tasks have isolated scopes via TaskLocal
     await withTaskGroup(of: Void.self) { group in
       for i in 1...10 {
@@ -239,7 +239,7 @@ private struct TestError: Error {}
 // MARK: - Async Tests
 
 struct AsyncWithScopeTests {
-  @Test func asyncScopeBasics() async {
+  @Test func `async scope basics`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -267,7 +267,7 @@ struct AsyncWithScopeTests {
     #expect(value == 42)
   }
 
-  @Test func asyncScopeThrows() async {
+  @Test func `async scope throws`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -288,7 +288,7 @@ struct AsyncWithScopeTests {
     }
   }
 
-  @Test func asyncScopeNesting() async {
+  @Test func `async scope nesting`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -333,7 +333,7 @@ struct AsyncWithScopeTests {
     }
   }
 
-  @Test func asyncScopeWithBag() async {
+  @Test func `async scope with bag`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -383,7 +383,7 @@ struct AsyncWithScopeTests {
     }
   }
 
-  @Test func asyncScopeWithStoredBag() async {
+  @Test func `async scope with stored bag`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 

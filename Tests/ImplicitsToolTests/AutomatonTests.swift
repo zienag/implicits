@@ -56,7 +56,7 @@ struct AutomatonTests {
     me.check("abcdef", expected: [])
   }
 
-  @Test func manyOptionalsDoesntCauseExponentialGrowth() {
+  @Test func `many optionals doesnt cause exponential growth`() {
     let alphabet = "abcdefghijklmnopqrstuvwxyz"
     var me = TestAutomaton()
     me.addPattern(
@@ -79,7 +79,7 @@ struct AutomatonTests {
     me.check("a" + alphabet, expected: [])
   }
 
-  @Test func zeroOrMore() {
+  @Test func `zero or more`() {
     var me = TestAutomaton()
     me.addPattern([.zeroOrMore("a")], value: 1)
     me.addPattern(["b", .zeroOrMore("c"), "d"], value: 2)

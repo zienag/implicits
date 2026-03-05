@@ -1551,7 +1551,6 @@ extension SyntaxTree.FunctionCall {
       scopeArg: lastParam.name.syntax
     )
   }
-
 }
 
 extension SyntaxTree.ClosureParameter {

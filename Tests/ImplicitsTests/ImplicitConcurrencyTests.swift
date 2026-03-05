@@ -5,7 +5,7 @@ import Testing
 @_spi(Unsafe) internal import Implicits
 
 struct ImplicitConcurrencyTests {
-  @Test func retrievingInDifferentContext() async {
+  @Test func `retrieving in different context`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -18,7 +18,7 @@ struct ImplicitConcurrencyTests {
     #expect(retrieved == 1)
   }
 
-  @Test func storedImplicitInActor() async {
+  @Test func `stored implicit in actor`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -31,7 +31,7 @@ struct ImplicitConcurrencyTests {
     #expect(retrieved == 42)
   }
 
-  @Test func nonisolatedActorFunction() {
+  @Test func `nonisolated actor function`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -45,7 +45,7 @@ struct ImplicitConcurrencyTests {
     #expect(result.declared == 999)
   }
 
-  @Test func createRootScopeInActor() async {
+  @Test func `create root scope in actor`() async {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -58,12 +58,12 @@ struct ImplicitConcurrencyTests {
     #expect(retrieved == 42)
   }
 
-  @Test func createRootScopeInMainActor() async {
+  @Test func `create root scope in main actor`() async {
     let retrieved = await testMainActor(id: 81)
     #expect(retrieved == 81)
   }
 
-  @Test func childTasksScopesShouldBeIsolated() async {
+  @Test func `child tasks scopes should be isolated`() async {
     let cp = Checkpoint<Step>()
 
     let scope = ImplicitScope()

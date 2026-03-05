@@ -2,7 +2,7 @@
 import Testing
 
 struct WithImplicitsMacroTests {
-  @Test func capturesImplicitsAtDefinitionTime() {
+  @Test func `captures implicits at definition time`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -20,7 +20,7 @@ struct WithImplicitsMacroTests {
     verifyInNestedScope(scope, wrapped: wrapped)
   }
 
-  @Test func multipleInvocations() {
+  @Test func `multiple invocations`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 

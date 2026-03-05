@@ -4,21 +4,21 @@ import ImplicitsTool
 import Testing
 
 struct PublicInterfaceSerializationTests {
-  @Test func symbolSerialization() {
+  @Test func `symbol serialization`() {
     check(initSymbol)
     check(staticSymbol)
     check(memberSymbol)
   }
 
-  @Test func interfaceSerialization() {
+  @Test func `interface serialization`() {
     check(interface)
   }
 
-  @Test func interface2Serialization() {
+  @Test func `interface2 serialization`() {
     check(interface2)
   }
 
-  @Test func emptyInterfaceSerialization() {
+  @Test func `empty interface serialization`() {
     check(ImplicitModuleInterface(
       module: "EmptyModule", symbols: [], testableSymbols: [],
       definedKeypathKeys: [],
