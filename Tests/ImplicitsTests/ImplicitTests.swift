@@ -7,7 +7,7 @@ import Testing
 @_spi(Unsafe) internal import Implicits
 
 struct ImplicitTests {
-  @Test func declaringAndRetrievingImplicitArg() {
+  @Test func `declaring and retrieving implicit arg`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -20,7 +20,7 @@ struct ImplicitTests {
     #expect(retrieve == 1)
   }
 
-  @Test func passingImplicitArgToFunction() {
+  @Test func `passing implicit arg to function`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -30,7 +30,7 @@ struct ImplicitTests {
     #expect(get(\.id, scope) == 2)
   }
 
-  @Test func passingImplicitArgToStructField() {
+  @Test func `passing implicit arg to struct field`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -47,7 +47,7 @@ struct ImplicitTests {
     #expect(WithID(scope).id == 3)
   }
 
-  @Test func passingMultipleImplicitArgsToStructFields() {
+  @Test func `passing multiple implicit args to struct fields`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -67,7 +67,7 @@ struct ImplicitTests {
     #expect(res.deviceID() == 5)
   }
 
-  @Test func pushingContext() {
+  @Test func `pushing context`() {
     func declareAndCheck(_ id: Int, _ scope: ImplicitScope) {
       let scope = scope.nested()
       defer { scope.end() }
@@ -92,7 +92,7 @@ struct ImplicitTests {
     declareAndCheck(4, scope)
   }
 
-  @Test func implicitInMultipleThreadsAreIndependent() {
+  @Test func `implicit in multiple threads are independent`() {
     let t1Pushed = DispatchSemaphore(value: 0)
     let t2Pushed = DispatchSemaphore(value: 0)
     let t1Declared = DispatchSemaphore(value: 0)
@@ -161,7 +161,7 @@ struct ImplicitTests {
     t2Finished.wait()
   }
 
-  @Test func multipleImplicitsInMultipleThreadsAreIndependent() {
+  @Test func `multiple implicits in multiple threads are independent`() {
     let t1Pushed = DispatchSemaphore(value: 0)
     let t2Pushed = DispatchSemaphore(value: 0)
     let t1Declared = DispatchSemaphore(value: 0)
@@ -248,7 +248,7 @@ struct ImplicitTests {
     t2Finished.wait()
   }
 
-  @Test func capturingImplicits() {
+  @Test func `capturing implicits`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -300,7 +300,7 @@ struct ImplicitTests {
     #expect(got2.deviceID() == 3)
   }
 
-  @Test func typeKey() {
+  @Test func `type key`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -332,7 +332,7 @@ struct ImplicitTests {
     #expect(idFactory() == "2")
   }
 
-  @Test func mappingKeySpecifierToKeySpecifier() {
+  @Test func `mapping key specifier to key specifier`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -346,7 +346,7 @@ struct ImplicitTests {
     #expect(get(\.deviceID, scope)() == 1)
   }
 
-  @Test func mappingKeySpecifierToType() {
+  @Test func `mapping key specifier to type`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -357,7 +357,7 @@ struct ImplicitTests {
     #expect(get(Int.self, scope) == 1)
   }
 
-  @Test func mappingTypeToKeySpecifier() {
+  @Test func `mapping type to key specifier`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 
@@ -368,7 +368,7 @@ struct ImplicitTests {
     #expect(get(\.id, scope) == 1)
   }
 
-  @Test func mappingTypeToType() {
+  @Test func `mapping type to type`() {
     let scope = ImplicitScope()
     defer { scope.end() }
 

@@ -6,5 +6,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Update SwiftFormat
+        run: brew upgrade swiftformat || true
       - name: SwiftFormat
         run: swiftformat --lint . --reporter github-actions-log

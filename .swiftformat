@@ -10,6 +10,7 @@
 --disable docComments
 --disable redundantMemberwiseInit
 --disable wrapFunctionBodies
+--disable redundantParens
 
 --enable wrapMultilineConditionalAssignment
 --enable blockComments

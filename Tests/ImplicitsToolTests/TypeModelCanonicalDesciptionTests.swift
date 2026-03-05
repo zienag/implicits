@@ -20,7 +20,7 @@ struct TypeModelCanonicalDesciptionTests {
     check("Foo?")
   }
 
-  @Test func unwrappedOptional() {
+  @Test func `unwrapped optional`() {
     check("Foo!")
   }
 
@@ -51,7 +51,7 @@ struct TypeModelCanonicalDesciptionTests {
     check("  __shared   Bar ", "__shared Bar")
   }
 
-  @Test func classRestriction() {
+  @Test func `class restriction`() {
     // Only valid in protocol restrictions, which SyntaxTree doesn't support yet
   }
 
@@ -78,19 +78,19 @@ struct TypeModelCanonicalDesciptionTests {
     check("Foo.Protocol")
   }
 
-  @Test func namedOpaqueReturn() {
+  @Test func `named opaque return`() {
     check("<each Foo: Bar> Foo")
   }
 
-  @Test func packElement() {
+  @Test func `pack element`() {
     check("each Foo")
   }
 
-  @Test func packExpansion() {
+  @Test func `pack expansion`() {
     check("repeat Foo")
   }
 
-  @Test func someOrAny() {
+  @Test func `some or any`() {
     check("some Foo")
   }
 

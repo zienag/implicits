@@ -3,15 +3,15 @@
 import Testing
 
 struct StaticAnalysisTests {
-  @Test func syntaxStructure() {
+  @Test func `syntax structure`() {
     verify(file: "syntax_structure.swift")
   }
 
-  @Test func basicGraph() {
+  @Test func `basic graph`() {
     verify(file: "graph_basic.swift")
   }
 
-  @Test func nestedScopes() {
+  @Test func `nested scopes`() {
     verify(file: "nested_scope.swift")
   }
 
@@ -19,27 +19,27 @@ struct StaticAnalysisTests {
     verify(file: "graph_recursion.swift")
   }
 
-  @Test func objectScope() {
+  @Test func `object scope`() {
     verify(file: "object_scope.swift")
   }
 
-  @Test func symbolResolution() {
+  @Test func `symbol resolution`() {
     verify(file: "symbol_resolution.swift")
   }
 
-  @Test func implicitBag() {
+  @Test func `implicit bag`() {
     verify(file: "implicit_bag.swift")
   }
 
-  @Test func storedImplicitBag() {
+  @Test func `stored implicit bag`() {
     verify(file: "stored_implicit_bag.swift")
   }
 
-  @Test func implicitScopeOrder() {
+  @Test func `implicit scope order`() {
     verify(file: "implicit_scope_order.swift")
   }
 
-  @Test func keyResolving() {
+  @Test func `key resolving`() {
     verify(file: "key_resolving.swift")
   }
 
@@ -47,38 +47,38 @@ struct StaticAnalysisTests {
     verify(file: "expressions.swift")
   }
 
-  @Test func implicitMap() {
+  @Test func `implicit map`() {
     verify(file: "implicit_map.swift")
   }
 
-  @Test func withScope() {
+  @Test func `with scope`() {
     verify(file: "with_scope.swift")
   }
 
-  @Test func withNamedImplicits() {
+  @Test func `with named implicits`() {
     verify(file: "with_named_implicits.swift")
   }
 
-  @Test func withImplicitsMacro() {
+  @Test func `with implicits macro`() {
     verify(file: "with_implicits_macro.swift")
   }
 
-  @Test func generatedInit() {
+  @Test func `generated init`() {
     verify(file: "generated_init.swift")
   }
 
-  @Test func typeResolution() {
+  @Test func `type resolution`() {
     verify(file: "type_resolution.swift")
   }
 
-  @Test func multipleFileResolution() {
+  @Test func `multiple file resolution`() {
     verify(files: [
       "multiple_file_resolution_f1.swift",
       "multiple_file_resolution_f2.swift",
     ])
   }
 
-  @Test func usingImplicitInterface() {
+  @Test func `using implicit interface`() {
     verify(
       files: [
         "using_implicit_interface.swift",
@@ -87,7 +87,7 @@ struct StaticAnalysisTests {
     )
   }
 
-  @Test func usingTestableImplicitInterface() {
+  @Test func `using testable implicit interface`() {
     verify(
       files: [
         "using_testable_implicit_interface.swift",
@@ -100,7 +100,7 @@ struct StaticAnalysisTests {
     verify(file: "exporting.swift", enableExporting: true)
   }
 
-  @Test func supportFile() {
+  @Test func `support file`() {
     verify(
       files: ["support_file.swift"],
       enableExporting: true,
@@ -111,15 +111,15 @@ struct StaticAnalysisTests {
     )
   }
 
-  @Test func ifConfigFiltering() {
+  @Test func `if config filtering`() {
     verify(file: "if_config_filtering.swift", compilationConditions: ["A", "B", "C"])
   }
 
-  @Test func ifConfigCodeBlock() {
+  @Test func `if config code block`() {
     verify(file: "if_config_code_block.swift", compilationConditions: ["A", "B", "C"])
   }
 
-  @Test func immediateClosure() {
+  @Test func `immediate closure`() {
     verify(file: "immediate_closure.swift")
   }
 }

@@ -8,7 +8,7 @@ import SwiftSyntax
 import TestResources
 
 struct EffectDetectionTests {
-  @Test func closureEffects() {
+  @Test func `closure effects`() {
     verifySyntax(file: "effect_detection.swift", using: ClosureEffectVerifier.self)
   }
 }
@@ -20,7 +20,7 @@ enum ClosureEffect: String, CaseIterable {
   case `throws`
 }
 
-struct ClosureEffectVerifier: SyntaxVerifier, Sendable {
+struct ClosureEffectVerifier: SyntaxVerifier {
   func extractNodes(
     from syntaxTree: [SyntaxTree<Syntax>.TopLevelEntity],
     locationConverter: SourceLocationConverter

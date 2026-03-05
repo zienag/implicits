@@ -33,7 +33,7 @@ struct SerializationTests {
     check([["a", "b"], ["c", "d"], ["e", "f"]])
   }
 
-  @Test func invalidDataError() throws {
+  @Test func `invalid data error`() throws {
     enum Foo: UInt8, Serializable {
       case a = 1, b = 2
     }
@@ -47,7 +47,7 @@ struct SerializationTests {
     }
   }
 
-  @Test func untrivialTypes() {
+  @Test func `untrivial types`() {
     check(Parent(bar: 42))
     let child = Child(bar: 0, baz: 0)
     let child2 = Child(bar: 0, baz: 1)
@@ -55,7 +55,7 @@ struct SerializationTests {
     check([Pointer(child), Pointer(child2)])
   }
 
-  @Test func emptyStringFollowedByDataWrite() throws {
+  @Test func `empty string followed by data write`() throws {
     let stream = OutputStream.toMemory()
     try FileWriter(stream: stream).withStream { try ["", "after"].serialize(to: &$0) }
     let data = try #require(stream.property(forKey: .dataWrittenToMemoryStreamKey) as? Data)
@@ -63,7 +63,7 @@ struct SerializationTests {
     #expect(try [String](from: &input) == ["", "after"])
   }
 
-  @Test func emptyStringFollowedByDataRead() throws {
+  @Test func `empty string followed by data read`() throws {
     let bytes = try ["", "after"].testSerialize()
     let result = try FileReader(stream: InputStream(data: Data(bytes)))
       .withStream { try [String](from: &$0) }
