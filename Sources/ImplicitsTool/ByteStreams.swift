@@ -4,8 +4,8 @@ import Foundation
 
 /// Error namespace for serialization errors.
 ///
-/// Serialization ans stream implementation must throw only those errors.
-public struct SerializationError: Error {
+/// Serialization and stream implementation must throw only those errors.
+public struct SerializationError: Error, CustomStringConvertible {
   public var description: String
 
   init(description: String) {
@@ -70,7 +70,11 @@ public struct FileReader {
         maxLength: into.count
       )
       if bytesRead != into.count {
-        // TODO: Take into account stream error and status
+        if let error = impl.streamError {
+          throw SerializationError(
+            description: "Stream error at \(impl.fileLocation): \(error)"
+          )
+        }
         throw SerializationError.endOfStream(
           at: impl.fileLocation, need: "\(into.count) bytes"
         )
@@ -131,7 +135,11 @@ public struct FileWriter {
         maxLength: buffer.count
       )
       if bytesWritten != buffer.count {
-        // TODO: Take into account stream error and status
+        if let error = impl.streamError {
+          throw SerializationError(
+            description: "Stream error at \(impl.fileLocation): \(error)"
+          )
+        }
         throw SerializationError.endOfStream(
           at: impl.fileLocation, need: "\(buffer.count) bytes"
         )
