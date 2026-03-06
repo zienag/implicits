@@ -1,6 +1,6 @@
 // Copyright 2023 Yandex LLC. All rights reserved.
 
-/// Represents visibility of variable or obejct declaration.
+/// Represents visibility of variable or object declaration.
 /// `default` value is used when no visibility keyword provided.
 /// ```
 /// private class Foo { ... }
@@ -27,7 +27,7 @@ public enum Visibility: Hashable {
     self == .default ? defaultVisibility ?? self : self
   }
 
-  func extensionMemeberVisibility() -> Visibility {
+  func extensionMemberVisibility() -> Visibility {
     switch self {
     case .private, .fileprivate:
       .fileprivate

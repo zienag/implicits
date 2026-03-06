@@ -105,7 +105,7 @@ extension SemaTreeBuilder {
       }
       return lookaheadMemberBlock(
         item.members, scope: scope, file: file,
-        defaultVisibility: item.visibility.extensionMemeberVisibility()
+        defaultVisibility: item.visibility.extensionMemberVisibility()
       ).namespaced(namespace)
     }
 
