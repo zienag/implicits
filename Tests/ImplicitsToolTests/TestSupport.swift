@@ -10,6 +10,7 @@ import TestResources
 
 func verify(
   file: String,
+  traceUnresolved: Bool = false,
   enableExporting: Bool = false,
   supportFile: String? = nil,
   compilationConditions: Set<String>? = nil,
@@ -17,6 +18,7 @@ func verify(
 ) {
   verify(
     files: [file],
+    traceUnresolved: traceUnresolved,
     enableExporting: enableExporting,
     supportFile: supportFile,
     compilationConditions: compilationConditions,
@@ -26,6 +28,7 @@ func verify(
 
 func verify(
   files: [String],
+  traceUnresolved: Bool = false,
   enableExporting: Bool = false,
   supportFile: String? = nil,
   compilationConditions: Set<String>? = nil,
@@ -37,6 +40,7 @@ func verify(
     let interface = verify(
       files: dep.files,
       modulename: dep.modulename,
+      traceUnresolved: false,
       enableExporting: false,
       supportFile: nil,
       compilationConditions: compilationConditions,
@@ -63,6 +67,7 @@ func verify(
   _ = verify(
     files: files,
     modulename: "TestModule",
+    traceUnresolved: traceUnresolved,
     enableExporting: enableExporting,
     supportFile: supportFile,
     compilationConditions: compilationConditions,
@@ -74,6 +79,7 @@ func verify(
 func verify(
   files: [String],
   modulename: String,
+  traceUnresolved: Bool,
   enableExporting: Bool,
   supportFile: String?,
   compilationConditions: Set<String>?,
@@ -92,8 +98,11 @@ func verify(
     files: zip(asts, files).map { .init(ast: $0, filename: $1) },
     modulename: modulename,
     dependencies: dependencies,
-    compilationConditions: compilationConditionsConfig,
-    enableExporting: enableExporting
+    config: .init(
+      compilationConditions: compilationConditionsConfig,
+      enableExporting: enableExporting,
+      traceUnresolved: traceUnresolved
+    )
   )
 
   // Diagnostics

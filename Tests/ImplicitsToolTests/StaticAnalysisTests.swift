@@ -122,6 +122,10 @@ struct StaticAnalysisTests {
   @Test func `immediate closure`() {
     verify(file: "immediate_closure.swift")
   }
+
+  @Test func `requirements trace`() {
+    verify(file: "graph_trace.swift", traceUnresolved: true)
+  }
 }
 
 private let anotherModule = (modulename: "AnotherModule", files: ["another_module.swift"])
