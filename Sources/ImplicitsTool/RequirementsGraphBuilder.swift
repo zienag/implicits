@@ -45,6 +45,7 @@ private struct UnresolvedGraph<Syntax, File> {
   var publicInterface = [(Idx, SymbolInfo<Syntax>)]()
   var testableInterface = [(Idx, SymbolInfo<Syntax>)]()
   var implicitFunctions = [(Idx, File, SMT.FuncDecl)]()
+  var traceEntryPoints = Set<Idx>()
 
   // Bags
   var storedBags = [Sema.Namespace: Idx]()
@@ -57,7 +58,8 @@ private struct UnresolvedGraph<Syntax, File> {
       namedImplicitsWrappers: namedImplicitsWrappers,
       publicInterface: publicInterface,
       testableInterface: testableInterface,
-      implicitFunctions: implicitFunctions
+      implicitFunctions: implicitFunctions,
+      traceEntryPoints: traceEntryPoints
     )
   }
 
@@ -106,6 +108,7 @@ private struct UnresolvedGraph<Syntax, File> {
         continue
       }
       graph.addEdge(from: idx, to: def)
+      traceEntryPoints.insert(def)
     }
 
     // Stored Implicit properties

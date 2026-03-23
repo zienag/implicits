@@ -22,6 +22,7 @@ public struct RequirementsGraph<Syntax, File> {
   var publicInterface: [(Graph.Index, Symbol)]
   var testableInterface: [(Graph.Index, Symbol)]
   var implicitFunctions: [(Graph.Index, File, SemaTree<Syntax>.FuncDecl)]
+  var traceEntryPoints: Set<Graph.Index>
 }
 
 extension RequirementsGraph {
@@ -35,7 +36,8 @@ extension RequirementsGraph {
   }
 
   func resolveRequirements(
-    diagnostics: inout Diagnostics
+    diagnostics: inout Diagnostics,
+    traceUnresolved: Bool = false
   ) -> ResolveRequirementsResult {
     var cache = [Graph.Index: Set<ImplicitKey>]()
     for ep in entryPoints {
@@ -44,6 +46,12 @@ extension RequirementsGraph {
         reqs.isEmpty, or: .unresolvedRequirements(reqs),
         at: graph[ep].payload
       )
+      if traceUnresolved, !reqs.isEmpty {
+        emitTraceNotes(
+          from: ep, unresolvedKeys: reqs, cache: cache,
+          diagnostics: &diagnostics
+        )
+      }
     }
     let bags = self.bags.map { (
       name: $0.name,
@@ -87,6 +95,62 @@ extension RequirementsGraph {
     )
   }
 
+  func emitTraceNotes(
+    from entryPoint: Graph.Index,
+    unresolvedKeys: Set<ImplicitKey>,
+    cache: [Graph.Index: Set<ImplicitKey>],
+    diagnostics: inout Diagnostics
+  ) {
+    var emitted = Set<[Graph.Index: DiagnosticMessage]>()
+    for key in unresolvedKeys.sorted(by: { $0.lexicographicalOrder < $1.lexicographicalOrder }) {
+      let path = tracePath(from: entryPoint, forKey: key, cache: cache)
+      for (i, nodeIdx) in path.enumerated() {
+        let noteIdx: Graph.Index
+        if graph[nodeIdx].requires.contains(key) {
+          noteIdx = nodeIdx
+        } else if traceEntryPoints.contains(nodeIdx), i > 0 {
+          noteIdx = path[i - 1]
+        } else {
+          continue
+        }
+        let msg = DiagnosticMessage.requires(key)
+        if emitted.insert([noteIdx: msg]).inserted {
+          diagnostics.note(msg, at: graph[noteIdx].payload)
+        }
+      }
+    }
+  }
+
+  func tracePath(
+    from start: Graph.Index,
+    forKey key: ImplicitKey,
+    cache: [Graph.Index: Set<ImplicitKey>]
+  ) -> [Graph.Index] {
+    func sortedSuccessors(of idx: Graph.Index) -> [Graph.Index] {
+      graph.valueWithEdges(at: idx).successors.keys.sorted(by: >)
+    }
+    var path = [Graph.Index]()
+    var visited = Set<Graph.Index>()
+    var stack: [IndexingIterator<[Graph.Index]>] = []
+    visited.insert(start)
+    path.append(start)
+    if graph[start].requires.contains(key) { return path }
+    stack.append(sortedSuccessors(of: start).makeIterator())
+    while !stack.isEmpty {
+      guard let successor = stack[stack.count - 1].next() else {
+        stack.removeLast()
+        path.removeLast()
+        continue
+      }
+      guard visited.insert(successor).inserted,
+            cache[successor]?.contains(key) == true else { continue }
+      path.append(successor)
+      if graph[successor].requires.contains(key) { return path }
+      stack.append(sortedSuccessors(of: successor).makeIterator())
+    }
+    return []
+  }
+
   func resolveRequirements(
     from: Graph.Index,
     cache: inout [Graph.Index: Set<ImplicitKey>],
@@ -107,6 +171,7 @@ extension RequirementsGraph {
       $0.formUnion(resolveRequirements(from: $1.key, cache: &cache, path: path))
     }
     requirements(of: &reqs, considering: node.value)
+    cache[from] = reqs
     return reqs
   }
 }
@@ -126,6 +191,10 @@ extension DiagnosticMessage {
     let reqString = reqs.map(\.descriptionForDiagnostics)
       .sorted().joined(separator: ", ")
     return "Unresolved requirement\(reqs.count > 1 ? "s" : ""): \(reqString)"
+  }
+
+  static func requires(_ key: ImplicitKey) -> Self {
+    "Requires '\(key.descriptionForDiagnostics)'"
   }
 }
 

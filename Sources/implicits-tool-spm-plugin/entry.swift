@@ -12,6 +12,7 @@ struct ImplicitsToolSPMPluginArgs: Codable {
   var moduleName: String
   var sourceFiles: [URL]
   var dependentInterfaces: [URL]
+  var traceUnresolved: Bool
   // Outputs
   var supportFile: URL
   var implicitInterface: URL
@@ -31,7 +32,10 @@ private enum ImplicitsTool {
       files: args.sourceFiles,
       modulename: args.moduleName,
       dependencies: args.dependentInterfaces,
-      enableExporting: true
+      config: .init(
+        enableExporting: true,
+        traceUnresolved: args.traceUnresolved
+      )
     )
 
     try analysisResult.supportFile.render()
@@ -58,7 +62,7 @@ extension StaticAnalysis {
     files: [URL],
     modulename: String,
     dependencies: [URL],
-    enableExporting: Bool
+    config: Config
   ) throws -> StaticAnalysis.Result {
     try run(
       files: files.map {
@@ -71,8 +75,7 @@ extension StaticAnalysis {
       dependencies: dependencies.map {
         try readDependencyInterface(at: $0)
       },
-      compilationConditions: .unknown,
-      enableExporting: enableExporting
+      config: config
     )
   }
 

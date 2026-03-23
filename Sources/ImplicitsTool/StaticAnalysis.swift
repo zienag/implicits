@@ -20,12 +20,27 @@ public enum StaticAnalysis {
     public var publicInterface: ImplicitModuleInterface
   }
 
+  public struct Config {
+    public var compilationConditions: CompilationConditionsConfig
+    public var enableExporting: Bool
+    public var traceUnresolved: Bool
+
+    public init(
+      compilationConditions: CompilationConditionsConfig = .unknown,
+      enableExporting: Bool = false,
+      traceUnresolved: Bool = false
+    ) {
+      self.compilationConditions = compilationConditions
+      self.enableExporting = enableExporting
+      self.traceUnresolved = traceUnresolved
+    }
+  }
+
   public static func run(
     files: [SourceFileInput],
     modulename: String,
     dependencies: [ImplicitModuleInterface],
-    compilationConditions: CompilationConditionsConfig,
-    enableExporting: Bool
+    config: Config
   ) -> Result {
     typealias FileSyntax =
       (name: String, content: [SyntaxTree<SyntaxInfo>.TopLevelEntity])
@@ -36,7 +51,7 @@ public enum StaticAnalysis {
       )
       let syntaxTree = SyntaxTree.build(
         file.ast,
-        ifConfig: compilationConditions
+        ifConfig: config.compilationConditions
       ).map { topLevel in
         topLevel.mapSyntax { swiftSyntax in
           SyntaxInfo.internal(
@@ -72,7 +87,7 @@ public enum StaticAnalysis {
     let semaTrees = SMTBuilder.build(
       modulename: modulename, module: syntaxTrees,
       dependencies: dependenciesForSema,
-      enableExporting: enableExporting,
+      enableExporting: config.enableExporting,
       diagnostics: &diagnostics
     )
 
@@ -86,7 +101,8 @@ public enum StaticAnalysis {
       }}
     )
     let checked = reqGraph.resolveRequirements(
-      diagnostics: &diagnostics
+      diagnostics: &diagnostics,
+      traceUnresolved: config.traceUnresolved
     )
 
     var externalFuncsWithImplicits = [SymbolInfo<Diagnostic.Location>: [ImplicitKey]]()
@@ -120,7 +136,7 @@ public enum StaticAnalysis {
       implicitFunctions: checked.implicitFunctions,
       bags: checked.bags,
       namedImplicitsWrappers: checked.namedImplicitsWrappers,
-      enableExporting: enableExporting,
+      enableExporting: config.enableExporting,
       dependencies: dependencies,
       diagnostics: &diagnostics,
       syntaxToLocation: \.codeLocation
