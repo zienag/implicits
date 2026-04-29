@@ -1,0 +1,9 @@
+{
+  "name": "implicits",
+  "description": "AI guidance for the Implicits Swift library — implicit parameter passing through call stacks. Bundles usage patterns, scope lifetime rules, closure handling, and static-analysis constraints so Claude generates correct code in projects using Implicits.",
+  "author": {
+    "name": "Yandex"
+  },
+  "homepage": "https://github.com/yandex/implicits",
+  "repository": "https://github.com/yandex/implicits"
+}

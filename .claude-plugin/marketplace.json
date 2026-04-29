@@ -1,0 +1,14 @@
+{
+  "name": "implicits",
+  "owner": {
+    "name": "Yandex"
+  },
+  "description": "Implicits — Swift library for implicit parameter passing through call stacks",
+  "plugins": [
+    {
+      "name": "implicits",
+      "source": "./",
+      "description": "AI guidance for working with the Implicits Swift library"
+    }
+  ]
+}
