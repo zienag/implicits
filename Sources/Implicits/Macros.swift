@@ -92,3 +92,71 @@ public macro withImplicits<each A, T>(
   module: "ImplicitsMacros",
   type: "WithImplicitsMacro"
 )
+
+/// Wraps a closure to capture implicit requirements from the enclosing scope.
+///
+/// Example:
+/// ```swift
+/// downloadImage(url: avatarURL, completion: #withImplicits { image, scope in
+///   @Implicit var filters: FilterApplier
+///   imageView.image = filters.applyBlur(image)
+/// })
+/// ```
+@freestanding(expression)
+public macro withImplicits<each A, T>(
+  _ body: @MainActor (repeat each A, ImplicitScope) -> T
+) -> @MainActor (repeat each A) -> T = #externalMacro(
+  module: "ImplicitsMacros",
+  type: "WithImplicitsMacro"
+)
+
+/// Wraps a closure to capture implicit requirements from the enclosing scope.
+///
+/// Example:
+/// ```swift
+/// downloadImage(url: avatarURL, completion: #withImplicits { image, scope in
+///   @Implicit var filters: FilterApplier
+///   imageView.image = filters.applyBlur(image)
+/// })
+/// ```
+@freestanding(expression)
+public macro withImplicits<each A, T>(
+  _ body: @MainActor (repeat each A, ImplicitScope) throws -> T
+) -> @MainActor (repeat each A) throws -> T = #externalMacro(
+  module: "ImplicitsMacros",
+  type: "WithImplicitsMacro"
+)
+
+/// Wraps a closure to capture implicit requirements from the enclosing scope.
+///
+/// Example:
+/// ```swift
+/// downloadImage(url: avatarURL, completion: #withImplicits { image, scope in
+///   @Implicit var filters: FilterApplier
+///   imageView.image = filters.applyBlur(image)
+/// })
+/// ```
+@freestanding(expression)
+public macro withImplicits<each A, T>(
+  _ body: @MainActor (repeat each A, ImplicitScope) async -> T
+) -> @MainActor (repeat each A) async -> T = #externalMacro(
+  module: "ImplicitsMacros",
+  type: "WithImplicitsMacro"
+)
+
+/// Wraps a closure to capture implicit requirements from the enclosing scope.
+///
+/// Example:
+/// ```swift
+/// downloadImage(url: avatarURL, completion: #withImplicits { image, scope in
+///   @Implicit var filters: FilterApplier
+///   imageView.image = filters.applyBlur(image)
+/// })
+/// ```
+@freestanding(expression)
+public macro withImplicits<each A, T>(
+  _ body: @MainActor (repeat each A, ImplicitScope) async throws -> T
+) -> @MainActor (repeat each A) async throws -> T = #externalMacro(
+  module: "ImplicitsMacros",
+  type: "WithImplicitsMacro"
+)

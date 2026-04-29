@@ -64,15 +64,22 @@ The `scope` parameter is always last.
 
 > **Note:** Since the closure must be wrapped in the macro, you can't use trailing closure syntax for the outer function. Instead of `fetch { ... }`, you write `fetch(completion: #withImplicits { ... })`.
 
-### Async and Throws
+### Effects and Isolation
 
-The macro automatically infers `async` and `throws` from the closure body:
+The macro infers `async` and `throws` from the closure body, and preserves `@MainActor` isolation on the result (across all four effect combinations):
 
 ```swift
 #withImplicits { scope async in ... }
 #withImplicits { scope throws in ... }
 #withImplicits { scope async throws in ... }
+
+let onTap: @MainActor () -> Void = #withImplicits { @MainActor scope in
+  @Implicit var theme: Theme
+  button.backgroundColor = theme.accent
+}
 ```
+
+Custom global actors (`@MyGlobalActor`) are not supported — Swift macros cannot be parameterized over type attributes. For non-`@MainActor` isolation, use [Named Wrappers](#named-wrappers-withnameimplicits): the build-time analyzer reads the closure's attributes per call site and generates a correctly typed wrapper.
 
 ### Limitations
 
