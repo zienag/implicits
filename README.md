@@ -11,6 +11,7 @@ A Swift library for implicit parameter passing through call stacks. Eliminate pa
 ## Table of Contents
 
 - [Installation](#installation)
+- [Claude Code Plugin](#claude-code-plugin)
 - [The Problem](#the-problem)
 - [The Solution](#the-solution)
 - [Usage Guide](#usage-guide)
@@ -41,6 +42,17 @@ Then add the library to your target:
 ```
 
 The `ImplicitsAnalysisPlugin` performs static analysis at build time to verify that all implicit parameters are properly provided through the call chain.
+
+## Claude Code Plugin
+
+If you use [Claude Code](https://claude.com/claude-code), install the bundled plugin so Claude generates correct Implicits code — scope lifetime, key selection, closure handling, and static-analysis constraints:
+
+```
+/plugin marketplace add yandex/implicits
+/plugin install implicits@implicits
+```
+
+The plugin contents live in [`.claude-plugin/`](.claude-plugin/) and [`skills/implicits-usage-guide/`](skills/implicits-usage-guide/).
 
 ## The Problem
 
