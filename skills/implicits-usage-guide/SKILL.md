@@ -1,6 +1,11 @@
-# Implicits Usage Guide for AI Assistants
+---
+name: implicits-usage-guide
+description: Swift Implicits library — use for code with `@Implicit`, `ImplicitScope`, `#withImplicits`, `#implicits`, `withScope`, or a `Package.swift` depending on the `implicits` package.
+---
 
-This project uses Implicits - a Swift library for implicit parameter passing through call stacks. Eliminates "parameter drilling" - passing same arguments through multiple function layers.
+# Implicits Usage Guide
+
+Implicits is a Swift library for implicit parameter passing through call stacks — eliminates "parameter drilling" (passing the same arguments through many function layers). Similar in spirit to implicit parameters in Scala or context receivers in Kotlin.
 
 ## Core Pattern
 
@@ -21,15 +26,15 @@ func fetch(_ scope: ImplicitScope) {
 ```
 
 **Rules:**
-- `ImplicitScope` — last argument without parameter label
-- Always `defer { scope.end() }` after creating scope
+- `ImplicitScope` — last argument, no parameter label
+- Always `defer { scope.end() }` after creating a scope
 - Declaration: `@Implicit var x = value` (with initializer)
 - Retrieval: `@Implicit var x: Type` (no initializer, explicit type)
 - Missing implicit = compile-time error
 
 ## Keys: Type-Based vs Named
 
-**Type-based (default)** — type is the key:
+**Type-based (default)** — the type itself is the key:
 ```swift
 @Implicit var network: NetworkService
 ```
@@ -52,22 +57,27 @@ func inner(_ outer: ImplicitScope) async {
   let scope = outer.nested()
   defer { scope.end() }
 
-  @Implicit var extra = ExtraService()  // added in this scope
+  @Implicit var extra = ExtraService()
   await extra.doWork(scope)
 }
 ```
 
-Note: async code is supported.
+Async code is supported.
 
 ## Closures
 
-Closures don't inherit scope — `#withImplicits` captures implicits used in body:
+Closures don't inherit scope automatically. Use `#withImplicits` to capture implicits used in the body:
+
 ```swift
 fetchData(completion: #withImplicits { result, scope in
   @Implicit var handler: ResultHandler
   handler.process(result)
 })
 ```
+
+Effects (`async`/`throws`) are inferred. `@MainActor` is preserved on the result; other global actors aren't — use named wrappers for those.
+
+For full details on `#withImplicits`, named wrappers, capture lists, and `#implicits`, see `docs/closures.md` in the Implicits repo.
 
 ## Factory Pattern
 
@@ -88,7 +98,7 @@ class Component {
 
 ## Stored Properties in Types
 
-`@Implicit` works as stored property — type needs scope in initializer:
+`@Implicit` works as a stored property — the type needs a scope in its initializer:
 ```swift
 struct View {
   @Implicit var theme: Theme
@@ -97,18 +107,18 @@ struct View {
 }
 ```
 
-## Init/Defer Alternative
+## `withScope` Alternative
 
-`withScope` handles scope lifecycle. When indentation is not a problem and the body is fairly small:
+`withScope` handles scope lifecycle when indentation isn't a problem and the body is small:
 ```swift
-withScope { scope in ... }                    // Root scope
-withScope(with: implicits) { scope in ... }   // From captured implicits
-withScope(nesting: outer) { scope in ... }    // Nested scope
+withScope { scope in ... }                    // root scope
+withScope(with: implicits) { scope in ... }   // from captured implicits
+withScope(nesting: outer) { scope in ... }    // nested scope
 ```
 
 ## Build-Time Analysis Setup
 
-Add plugin to Package.swift:
+Add the plugin to `Package.swift`:
 ```swift
 .target(
   name: "MyApp",
@@ -121,5 +131,5 @@ Add plugin to Package.swift:
 
 ## Static Analysis Constraints
 
-1. **Type annotations may be needed** for type-based keys — analyzer infers when possible
-2. **No dynamic dispatch** — analyzer can't track through protocol-typed values or closures stored in properties. Static calls only.
+1. **Type annotations may be needed** for type-based keys — the analyzer infers when possible.
+2. **No dynamic dispatch** — the analyzer can't track through protocol-typed values or closures stored in properties. Static calls only.
