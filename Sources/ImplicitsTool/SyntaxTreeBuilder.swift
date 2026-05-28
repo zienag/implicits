@@ -496,8 +496,11 @@ extension MacroExpansionExprSyntax: SyntaxDescriptionProvider {
       name: macroName.text,
       arguments: arguments.map { arg in
         .init(
-          value: arg.expression.syntaxDescription(context: context),
-          syntax: Syntax(arg.expression)
+          name: arg.label.map { SXT.Entity(value: $0.text, syntax: Syntax($0)) },
+          value: .init(
+            value: arg.expression.syntaxDescription(context: context),
+            syntax: Syntax(arg.expression)
+          )
         )
       },
       trailingClosure: trailingClosure.map {

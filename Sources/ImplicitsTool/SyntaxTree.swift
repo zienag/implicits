@@ -167,9 +167,14 @@ public enum SyntaxTree<Syntax> {
 
   public struct MacroExpansion {
     public var name: String
-    public var arguments: [Entity<Expression>]
+    public var arguments: [LabeledArgument]
     public var trailingClosure: Entity<ClosureExpr>?
     public var additionalTrailingClosures: [LabeledTrailingClosure]
+
+    public struct LabeledArgument {
+      public var name: Entity<String>?
+      public var value: Entity<Expression>
+    }
   }
 
   /// Represents initializer declaration
@@ -792,7 +797,12 @@ extension SyntaxTree.MacroExpansion {
   func mapSyntax<S>(_ t: (Syntax) -> S) -> SyntaxTree<S>.MacroExpansion {
     .init(
       name: name,
-      arguments: arguments.map { $0.map(t, ST.Expression.mapSyntax) },
+      arguments: arguments.map {
+        .init(
+          name: $0.name?.mapSyntax(t),
+          value: $0.value.map(t, ST.Expression.mapSyntax)
+        )
+      },
       trailingClosure: trailingClosure?.map(t, ST.ClosureExpr.mapSyntax),
       additionalTrailingClosures: additionalTrailingClosures.map { $0.mapSyntax(t) }
     )

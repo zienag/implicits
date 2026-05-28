@@ -32,12 +32,14 @@ public struct WithImplicitsMacro: ExpressionMacro {
     let loc = try SourceLocation(of: node, in: context)
     try loc.checkNotInMacroExpansion("withImplicits")
 
-    // Get the closure argument (either as argument or trailing closure)
+    // The closure body is the trailing closure when present, otherwise the
+    // last positional argument (an explicit isolation marker, if passed,
+    // precedes it).
     let closure: ClosureExprSyntax
     if let trailingClosure = node.trailingClosure {
       closure = trailingClosure
-    } else if let firstArg = node.arguments.first,
-              let closureExpr = firstArg.expression.as(ClosureExprSyntax.self) {
+    } else if let lastArg = node.arguments.last,
+              let closureExpr = lastArg.expression.as(ClosureExprSyntax.self) {
       closure = closureExpr
     } else {
       throw DiagnosticsError.at(node, "#withImplicits requires a closure argument")
