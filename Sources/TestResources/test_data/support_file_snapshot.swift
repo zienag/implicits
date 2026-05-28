@@ -142,6 +142,17 @@ internal func __implicit_wrap_support_file_swift_86_7<T>(_ body: @escaping (Impl
   }
 }
 
+internal func __implicit_wrap_support_file_swift_179_7<T>(_ body: @escaping @MainActor (ImplicitScope) -> T) -> @MainActor () -> T {
+  let implicits = Implicits(unsafeKeys: Implicits.getRawKey((UInt16).self), Implicits.getRawKey((UInt8).self))
+  return {
+    let scope = ImplicitScope(with: implicits)
+    defer {
+      scope.end()
+    }
+    return body(scope)
+  }
+}
+
 public func supportFileFunc(arg: Int, bool: @autoclosure () -> Bool, keyFromAnotherModule: @autoclosure () -> [String: [Int]], supportFileKey2: @autoclosure () -> [Int]) {
   let scope = ImplicitScope()
   defer {

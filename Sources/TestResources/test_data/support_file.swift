@@ -173,6 +173,14 @@ private func requires(_: ImplicitScope) {
   var a2: UInt16
 }
 
+// Explicit isolation argument: analyzer must respect `isolation: .mainActor`
+// even when the closure body lacks an `@MainActor` annotation.
+private func withExplicitIsolation(_: ImplicitScope) {
+  _ = #withImplicits(isolation: .mainActor) { scope in
+    requires(scope)
+  }
+}
+
 // Helper stubs for effect testing
 private func asyncFunc() async {}
 private func throwingFunc() throws {}

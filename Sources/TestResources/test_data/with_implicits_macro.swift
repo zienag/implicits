@@ -76,3 +76,37 @@ private func __implicit_wrap_with_implicits_macro_swift_31_7<T>(_ body: @escapin
 private func __implicit_wrap_with_implicits_macro_swift_41_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
 private func __implicit_wrap_with_implicits_macro_swift_51_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
 private func __implicit_wrap_with_implicits_macro_swift_65_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
+
+private func explicitNoIsolation() {
+  // expected-error@+1 {{Unresolved requirement: Int64}}
+  let scope = ImplicitScope()
+  defer { scope.end() }
+
+  _ = #withImplicits(isolation: .none) { scope in
+    @Implicit() var v1: Int64
+  }
+}
+
+private func explicitNoIsolationParenthesized() {
+  // expected-error@+1 {{Unresolved requirement: UInt64}}
+  let scope = ImplicitScope()
+  defer { scope.end() }
+
+  _ = #withImplicits(isolation: .none, { scope in
+    @Implicit() var v1: UInt64
+  })
+}
+
+private func explicitMainActor() {
+  // expected-error@+1 {{Unresolved requirement: UInt16}}
+  let scope = ImplicitScope()
+  defer { scope.end() }
+
+  _ = #withImplicits(isolation: .mainActor) { @MainActor scope in
+    @Implicit() var v1: UInt16
+  }
+}
+
+private func __implicit_wrap_with_implicits_macro_swift_85_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
+private func __implicit_wrap_with_implicits_macro_swift_95_7<T>(_ body: @escaping (ImplicitScope) -> T) -> () -> T { fatalError() }
+private func __implicit_wrap_with_implicits_macro_swift_105_7<T>(_ body: @escaping @MainActor (ImplicitScope) -> T) -> @MainActor () -> T { fatalError() }

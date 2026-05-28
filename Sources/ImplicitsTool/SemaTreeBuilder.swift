@@ -1083,10 +1083,16 @@ enum SemaTreeBuilder<
     // closureParamCount is all params except the scope
     let closureParamCount = params.count - 1
 
+    var typeAttributes = closure.typeAttributes
+    if macro.requestsMainActorIsolation,
+       !typeAttributes.contains(where: \.isMainActor) {
+      typeAttributes.append(.identifier("MainActor"))
+    }
+
     let effects = ClosureEffects(
       isAsync: closure.isAsync,
       isThrowing: closure.isThrowing,
-      typeAttributes: closure.typeAttributes
+      typeAttributes: typeAttributes
     )
     let body = visit(
       codeBlockEntities: closure.body,
@@ -1564,10 +1570,31 @@ extension SyntaxTree.MacroExpansion {
     if let trailing = trailingClosure {
       return trailing
     }
-    if let arg = arguments.singleElement, case let .closure(expr) = arg.value {
-      return .init(value: expr, syntax: arg.syntax)
+    // The closure is at most one positional arg (other args carry markers
+    // like `isolation:`); take the last one if it is a closure.
+    if let last = arguments.last, case let .closure(expr) = last.value.value {
+      return .init(value: expr, syntax: last.value.syntax)
     }
     return nil
+  }
+
+  /// Whether the macro call has an explicit `isolation: .mainActor` argument.
+  /// Interpreted semantically from the labeled-arg shape rather than baked
+  /// into the syntax tree.
+  var requestsMainActorIsolation: Bool {
+    arguments.contains { arg in
+      guard arg.name?.value == "isolation",
+            case let .memberAccessor(_, name) = arg.value.value
+      else { return false }
+      return name == "mainActor"
+    }
+  }
+}
+
+extension SyntaxTree.TypeModel {
+  fileprivate var isMainActor: Bool {
+    if case let .identifier(name) = self { return name == "MainActor" }
+    return false
   }
 }
 

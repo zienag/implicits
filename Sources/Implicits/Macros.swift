@@ -25,6 +25,16 @@ public macro implicits() -> Implicits = #externalMacro(
   type: "ImplicitMacro"
 )
 
+/// Selects the non-isolated overload of `#withImplicits`.
+public enum _WithImplicitsNoIsolation {
+  case none
+}
+
+/// Selects the `@MainActor`-isolated overload of `#withImplicits`.
+public enum _WithImplicitsMainActor {
+  case mainActor
+}
+
 /// Wraps a closure to capture implicit requirements from the enclosing scope.
 ///
 /// Example:
@@ -34,8 +44,11 @@ public macro implicits() -> Implicits = #externalMacro(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the non-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsNoIsolation = .none,
   _ body: (repeat each A, ImplicitScope) -> T
 ) -> (repeat each A) -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -51,8 +64,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the non-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsNoIsolation = .none,
   _ body: (repeat each A, ImplicitScope) async -> T
 ) -> (repeat each A) async -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -68,8 +84,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the non-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsNoIsolation = .none,
   _ body: (repeat each A, ImplicitScope) throws -> T
 ) -> (repeat each A) throws -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -85,8 +104,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the non-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsNoIsolation = .none,
   _ body: (repeat each A, ImplicitScope) async throws -> T
 ) -> (repeat each A) async throws -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -102,8 +124,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the `@MainActor`-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsMainActor = .mainActor,
   _ body: @MainActor (repeat each A, ImplicitScope) -> T
 ) -> @MainActor (repeat each A) -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -119,8 +144,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the `@MainActor`-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsMainActor = .mainActor,
   _ body: @MainActor (repeat each A, ImplicitScope) throws -> T
 ) -> @MainActor (repeat each A) throws -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -136,8 +164,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the `@MainActor`-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsMainActor = .mainActor,
   _ body: @MainActor (repeat each A, ImplicitScope) async -> T
 ) -> @MainActor (repeat each A) async -> T = #externalMacro(
   module: "ImplicitsMacros",
@@ -153,8 +184,11 @@ public macro withImplicits<each A, T>(
 ///   imageView.image = filters.applyBlur(image)
 /// })
 /// ```
+///
+/// - Parameter isolation: Selects the `@MainActor`-isolated overload.
 @freestanding(expression)
 public macro withImplicits<each A, T>(
+  isolation: _WithImplicitsMainActor = .mainActor,
   _ body: @MainActor (repeat each A, ImplicitScope) async throws -> T
 ) -> @MainActor (repeat each A) async throws -> T = #externalMacro(
   module: "ImplicitsMacros",
