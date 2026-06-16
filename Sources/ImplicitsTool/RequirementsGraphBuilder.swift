@@ -314,9 +314,15 @@ extension UnresolvedGraph {
   // MARK: CodeBlock
 
   struct CodeBlockState {
+    struct LocalScope {
+      var declaredAt: Syntax
+      var endedAt: Syntax?
+      var providedKeys: [ImplicitKey: Syntax] = [:]
+    }
+
     enum Scope {
       case inherited
-      case local(declaredAt: Syntax, endedAt: Syntax?)
+      case local(LocalScope)
     }
 
     var parent: Idx?
@@ -403,13 +409,13 @@ extension UnresolvedGraph {
         diagnostics.check(
           nested, or: .newScopeWhileInheriting, at: at, severity: .warning
         )
-        scope = .local(declaredAt: at, endedAt: nil)
+        scope = .local(LocalScope(declaredAt: at))
       case .none:
         diagnostics.check(!nested, or: .nestingNoScope, at: at)
-        scope = .local(declaredAt: at, endedAt: nil)
-      case let .local(declared, _):
+        scope = .local(LocalScope(declaredAt: at))
+      case let .local(local):
         diagnostics.diagnose(.moreThanOneLocalScope, at: at)
-        diagnostics.note(.scopeDeclaredHere, at: declared)
+        diagnostics.note(.scopeDeclaredHere, at: local.declaredAt)
       }
     }
 
@@ -417,12 +423,13 @@ extension UnresolvedGraph {
       switch scope {
       case .inherited, .none:
         diagnostics.diagnose(.endingNonLocalScope, at: at)
-      case let .local(declared, ended):
-        if let alreadyEnded = ended {
+      case var .local(local):
+        if let alreadyEnded = local.endedAt {
           diagnostics.diagnose(.endingScopeMultipleTimes, at: at)
           diagnostics.diagnose(.scopeEndedHere, at: alreadyEnded, severity: .note)
         }
-        scope = .local(declaredAt: declared, endedAt: at)
+        local.endedAt = at
+        scope = .local(local)
       }
     }
 
@@ -430,27 +437,34 @@ extension UnresolvedGraph {
       switch scope {
       case .inherited, .none:
         break
-      case let .local(declared, ended):
+      case let .local(local):
         diagnostics.check(
-          ended != nil,
+          local.endedAt != nil,
           or: .scopeIsNotEnded,
-          at: declared
+          at: local.declaredAt
         )
       }
     }
 
-    func checkOnWriteAccess(into diagnostics: inout Diagnostics, at syntax: Syntax) {
+    mutating func implicitSet(
+      _ key: ImplicitKey,
+      into diagnostics: inout Diagnostics,
+      at syntax: Syntax
+    ) {
       switch scope {
       case .inherited, .none:
         diagnostics.diagnose(.noWritableScope, at: syntax)
-      case .local:
-        break
+      case var .local(local):
+        if let previous = local.providedKeys[key] {
+          diagnostics.diagnose(.duplicateImplicit(key), at: syntax)
+          diagnostics.note(.previousImplicitDeclaration, at: previous)
+        } else {
+          local.providedKeys[key] = syntax
+          scope = .local(local)
+        }
       }
       if let ifConfigCondition {
-        diagnostics.diagnose(
-          .noMutationInIfConfig,
-          at: syntax
-        )
+        diagnostics.diagnose(.noMutationInIfConfig, at: syntax)
         diagnostics.note(.unresolvedIfConfigCondition, at: ifConfigCondition)
       }
     }
@@ -606,7 +620,7 @@ extension UnresolvedGraph {
           provides: [implicit.key],
           parent: state.parent
         )
-        state.checkOnWriteAccess(into: &diagnostics, at: sema.syntax)
+        state.implicitSet(implicit.key, into: &diagnostics, at: sema.syntax)
       }
     case let .implicitMap(from: from, to: to):
       state.parent = addNode(
@@ -615,7 +629,7 @@ extension UnresolvedGraph {
         requires: [from],
         parent: state.parent
       )
-      state.checkOnWriteAccess(into: &diagnostics, at: sema.syntax)
+      state.implicitSet(to, into: &diagnostics, at: sema.syntax)
     case let .withScope(nested: isNested, withBag: usesBag, body: body):
       var innerState = state.innerScopeLense
       defer { state.innerScopeLense = innerState }
@@ -756,6 +770,12 @@ extension DiagnosticMessage {
     "Implicitly overriding existing scope"
   fileprivate static let moreThanOneLocalScope: Self =
     "Multiple local implicit scopes"
+  fileprivate static func duplicateImplicit(_ key: ImplicitKey) -> Self {
+    "Redeclaring implicit '\(key.descriptionForDiagnostics)' in the same scope"
+  }
+
+  fileprivate static let previousImplicitDeclaration: Self =
+    "Previous declaration here"
   fileprivate static let scopeDeclaredHere: Self =
     "Foremost declaration"
   fileprivate static let endingNonLocalScope: Self =
