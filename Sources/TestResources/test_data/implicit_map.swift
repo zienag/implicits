@@ -21,6 +21,10 @@ private func entry() {
     let scope = scope.nested()
     defer { scope.end() }
 
+    // expected-note@+1 {{Previous declaration here}}
+    Implicit.map(UInt16.self, to: Int16.self) { _ in 0 }
+
+    // expected-error@+1 {{Redeclaring implicit 'Int16' in the same scope}}
     Implicit.map(UInt16.self, to: Int16.self) { _ in 0 }
 
     @Implicit()

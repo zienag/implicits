@@ -68,12 +68,24 @@ swift run implicits-tool-spm-plugin <args-file>
    }
    ```
 
+## Analyzer Architecture
+
+The static analyzer (`ImplicitsTool`) is a three-stage pipeline: `SyntaxTreeBuilder` → `SemaTreeBuilder` → `RequirementsGraphBuilder`. Scope dataflow — the local/inherited/none state machine, writability, nesting, scope-end and other cross-statement scope rules — lives only in the last stage (`CodeBlockState`); add scope rules there, not in the earlier stages.
+
 ## Testing
 
 **Necessity and sufficiency principle**: Every test must add unique use case coverage. Don't write tests for the sake of tests - each test should verify a specific behavior that isn't already covered.
 
-- Integration tests are in `Sources/TestResources/test_data/` - check these for examples when implementing new features
-- Tests use inline annotations (e.g., `// expected-error`, `// expect-syntax:`) to specify expected behavior
+Analyzer regression tests are the `test_data/*.swift` files in `Sources/TestResources/test_data/` (run from `StaticAnalysisTests.swift`): ordinary Swift exercising the analyzer, with expected diagnostics asserted by inline comments. They look like:
+
+```swift
+private func entry() {
+  // expected-error@+1 {{Using implicits without 'ImplicitScope'}}
+  @Implicit() var v: Int
+}
+```
+
+`@+1` points the comment at the next line; omit it to annotate the same line. Also `expected-note`/`expected-warning` and `expected-key …` for key declarations. The harness matches diagnostics as a set — an unexpected one fails just like a missing one.
 
 ## File Organization
 

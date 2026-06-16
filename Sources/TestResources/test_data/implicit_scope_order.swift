@@ -106,6 +106,19 @@ private func entry1() {
   }
 }
 
+private func duplicateKeyInScope() {
+  let scope = ImplicitScope()
+  defer { scope.end() }
+
+  // expected-note@+2 {{Previous declaration here}}
+  @Implicit()
+  var first: UInt8 = 0
+
+  // expected-error@+2 {{Redeclaring implicit 'UInt8' in the same scope}}
+  @Implicit()
+  var second: UInt8 = 0
+}
+
 private func code() {}
 private func code(_: ImplicitScope) {}
 
