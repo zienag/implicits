@@ -1373,30 +1373,6 @@ extension SyntaxTree.Parameter {
   }
 }
 
-extension SyntaxTree.Attribute {
-  var simpleIdentifier: String? {
-    switch self.name {
-    case let .identifier(id): id
-    default: nil
-    }
-  }
-
-  var isImplicit: Bool {
-    simpleIdentifier == ImplicitKeyword.Annotation.implicit
-  }
-
-  var isImplicitSpi: Bool {
-    guard
-      simpleIdentifier == ImplicitKeyword.SPI.attributeName,
-      let args = arguments,
-      let arg = args.first, args.count == 1
-    else {
-      return false
-    }
-    return arg.value.value.simpleIdentifier() == ImplicitKeyword.SPI.annotationName
-  }
-}
-
 extension Sema.FuncModifier {
   init?(_ m: SyntaxTreeBuildingBlocks.DeclModifier) {
     switch m {
@@ -1761,7 +1737,7 @@ extension DiagnosticMessage {
   // MARK: SPI
 
   fileprivate static let publicWithoutSPI: Self =
-    "Public function must be marked with '@\(ImplicitKeyword.SPI.attributeName)(\(ImplicitKeyword.SPI.annotationName))' attribute when exporting enabled"
+    "Public function must be marked with '@\(ImplicitKeyword.SwiftAttribute.spi)(\(ImplicitKeyword.SPI.annotationName))' attribute when exporting enabled"
 
   // MARK: Unknown syntax
 

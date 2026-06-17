@@ -160,27 +160,30 @@ enum SupportFileBuilder<Syntax> {
 }
 
 private struct ImportsIndex {
-  var store: [String: [(Visibility, debugBlame: String)]] = [:]
-
-  private mutating func register(
-    key: String, visibility: Visibility, blame: String
-  ) {
-    store[key, default: []].append((visibility, blame))
+  private struct Entry {
+    var visibility: Visibility
+    var attributes: Set<SupportFile.ImportAttribute>
+    var debugBlame: String
   }
+
+  private var store: [String: [Entry]] = [:]
 
   mutating func registerImport(
     module: String, visibility: Visibility, blame: String
   ) {
-    register(key: module, visibility: visibility, blame: blame)
+    store[module, default: []].append(
+      Entry(visibility: visibility, attributes: [], debugBlame: blame)
+    )
   }
 
   mutating func registerImport(
     _ decl: SyntaxTree<some Any>.ImportDecl, blame: String
   ) {
-    register(
-      key: decl.importedSymbolDescr,
-      visibility: decl.visibility, blame: blame
-    )
+    store[decl.importedSymbolDescr, default: []].append(Entry(
+      visibility: decl.visibility,
+      attributes: Set(decl.attributes.compactMap(\.importAttribute).filter(\.isPropagated)),
+      debugBlame: blame
+    ))
   }
 
   mutating func registerImports(
@@ -191,16 +194,17 @@ private struct ImportsIndex {
     }
   }
 
-  func sortedImports() -> [(Visibility, String, debugBlame: String)] {
-    store.map {
-      (
-        $0.value.max {
-          $0.0.visibilityRelation < $1.0.visibilityRelation
-        }?.0 ?? .default,
-        $0.key,
-        debugBlame: $0.value.map(\.debugBlame).joined(separator: ", ")
+  func sortedImports() -> [SupportFile.Import] {
+    store.map { module, entries in
+      SupportFile.Import(
+        visibility: entries.max {
+          $0.visibility.visibilityRelation < $1.visibility.visibilityRelation
+        }?.visibility ?? .default,
+        module: module,
+        attributes: entries.reduce(into: []) { $0.formUnion($1.attributes) },
+        debugBlame: entries.map(\.debugBlame).joined(separator: ", ")
       )
-    }.sorted { $0.1 < $1.1 }
+    }.sorted { $0.module < $1.module }
   }
 }
 

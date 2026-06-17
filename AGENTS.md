@@ -72,6 +72,8 @@ swift run implicits-tool-spm-plugin <args-file>
 
 The static analyzer (`ImplicitsTool`) is a three-stage pipeline: `SyntaxTreeBuilder` → `SemaTreeBuilder` → `RequirementsGraphBuilder`. Scope dataflow — the local/inherited/none state machine, writability, nesting, scope-end and other cross-statement scope rules — lives only in the last stage (`CodeBlockState`); add scope rules there, not in the earlier stages.
 
+Source-level name literals (keywords, identifiers, attribute names) live in `ImplicitKeyword` (`Constants.swift`) — reference them, don't hardcode strings like `"testable"`. Semantic predicates over an attribute (`isImplicit`, `isTestable`, `importAttribute`, …) all live in `SyntaxTreeAttribute.swift`; add new ones there, not inline in a builder. Structural extensions on `SyntaxTree.Attribute` (`mapSyntax`, `render`) stay beside their siblings instead.
+
 ## Testing
 
 **Necessity and sufficiency principle**: Every test must add unique use case coverage. Don't write tests for the sake of tests - each test should verify a specific behavior that isn't already covered.
@@ -87,11 +89,13 @@ private func entry() {
 
 `@+1` points the comment at the next line; omit it to annotate the same line. Also `expected-note`/`expected-warning` and `expected-key …` for key declarations. The harness matches diagnostics as a set — an unexpected one fails just like a missing one.
 
+Every file under `test_data/` is also a build input: the `__TestResourcesCompilation` target compiles the whole directory against `Implicits` + `AnotherModule`, so each test-data and snapshot file must be valid Swift importing only real modules (`Implicits`, `AnotherModule`, or system frameworks) — you can't `import` a made-up module to exercise import handling. Some tests also assert the generated support file against a checked-in `*_snapshot.swift`; when rendering changes, update that snapshot and keep it compilable too.
+
 ## File Organization
 
 - **Main type first**: The primary type of a file goes at the top. If a file is named `Foo.swift`, the `Foo` type should be at the top.
 - **Helper/utility types at the bottom**: Supporting structs, enums, extensions, and helper types go after the main type, not before it.
-- **Extensions of the main type**: Place extensions of the file's main type immediately after the main type definition.
+- **Extensions of the main type**: Prefer the type's own body for its members and nested types; use a same-file extension only to group a distinct concern, and place it immediately after the main type definition. Keep companion nested types together rather than leaving one free-floating.
 - **Extensions of other types**: Place extensions of unrelated types (like `DiagnosticMessage`) at the bottom.
 
 ## Important Constraints

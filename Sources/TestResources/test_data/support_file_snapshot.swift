@@ -1,7 +1,7 @@
 // swiftformat:disable all
 #if false
 #endif
-import AnotherModule
+@testable @_spi(SomeSPIGroup) import AnotherModule
 private import CoreGraphics
 internal import CoreImage
 import Foundation

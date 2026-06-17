@@ -220,9 +220,3 @@ extension SyntaxTree.TopLevelStatement {
     return value
   }
 }
-
-extension SyntaxTree.Attribute {
-  var isExported: Bool {
-    self.simpleIdentifier == "_exported" && self.arguments == nil
-  }
-}
