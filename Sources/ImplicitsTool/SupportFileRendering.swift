@@ -246,29 +246,42 @@ private func implicitsCallSyntax(requirements: [ImplicitKey]) -> FunctionCallExp
 }
 
 private func importSyntax(
-  imports: [(Visibility, String, debugBlame: String)],
+  imports: [SupportFile.Import],
   needsImplicitsUnsafeSPI: Bool,
   accessLevelOnImports: Bool,
   renderBlame: Bool
 ) -> [ImportDeclSyntax] {
-  imports.map { visibility, moduleName, debugBlame in
+  imports.map { imp in
     let attributes = AttributeListSyntax {
-      if needsImplicitsUnsafeSPI, moduleName == ImplicitKeyword.importModuleName {
+      if needsImplicitsUnsafeSPI, imp.module == ImplicitKeyword.importModuleName {
         "@_spi(Unsafe)"
+      }
+      for attribute in imp.attributes.sorted() {
+        attribute.syntax
       }
     }
     return ImportDeclSyntax(
       attributes: attributes,
       modifiers: .init(itemsBuilder: {
-        if accessLevelOnImports, let visibility = visibility.render() {
+        if accessLevelOnImports, let visibility = imp.visibility.render() {
           visibility
         }
       }),
       path: ImportPathComponentListSyntax {
-        ImportPathComponentSyntax(name: .identifier(moduleName))
+        ImportPathComponentSyntax(name: .identifier(imp.module))
       },
-      trailingTrivia: renderBlame ? .blockComment(" /* \(debugBlame) */") : nil
+      trailingTrivia: renderBlame ? .blockComment(" /* \(imp.debugBlame) */") : nil
     )
+  }
+}
+
+extension SupportFile.ImportAttribute {
+  fileprivate var syntax: AttributeListSyntax.Element {
+    switch self {
+    case .testable: .attribute("@testable")
+    case let .spi(group): .attribute("@_spi(\(raw: group))")
+    case .exported: .attribute("@_exported")
+    }
   }
 }
 

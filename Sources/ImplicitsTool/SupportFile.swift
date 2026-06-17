@@ -24,9 +24,29 @@ public struct SupportFile {
     public var requirements: [ImplicitKey]
   }
 
+  struct Import {
+    var visibility: Visibility
+    var module: String
+    var attributes: Set<ImportAttribute>
+    var debugBlame: String
+  }
+
+  enum ImportAttribute: Hashable, Comparable {
+    case testable
+    case spi(String)
+    case exported
+
+    var isPropagated: Bool {
+      switch self {
+      case .testable, .spi: true
+      case .exported: false
+      }
+    }
+  }
+
   var keys: [Sema.ImplicitKeyDecl]
-  var imports: [(Visibility, String, debugBlame: String)]
-  var ifFalseImports: [(Visibility, String, debugBlame: String)]
+  var imports: [Import]
+  var ifFalseImports: [Import]
   var functions: [(FuncSignature, [ImplicitParameter])]
   var ifFalseFunctions: [(FuncSignature, [ImplicitParameter])]
   var bags: [(name: String, requirements: [ImplicitKey])]

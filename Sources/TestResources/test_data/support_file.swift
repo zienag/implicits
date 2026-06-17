@@ -1,9 +1,9 @@
 /// See `n_support_file_snapshot.swift` , that includes all generated code for support file
 /// based on API usage in this file.
 
-import Foundation
+@_exported import Foundation
 
-import AnotherModule
+@_spi(SomeSPIGroup) @testable import AnotherModule
 import Implicits
 
 internal import CoreImage

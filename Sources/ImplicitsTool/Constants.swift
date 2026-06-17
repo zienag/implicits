@@ -25,8 +25,14 @@ enum ImplicitKeyword {
   }
 
   enum SPI {
-    static let attributeName = "_spi"
     static let annotationName = "Implicits"
+  }
+
+  /// Built-in Swift attributes the analyzer recognizes but Implicits doesn't declare.
+  enum SwiftAttribute {
+    static let testable = "testable"
+    static let exported = "_exported"
+    static let spi = "_spi"
   }
 
   static let importModuleName = "Implicits"

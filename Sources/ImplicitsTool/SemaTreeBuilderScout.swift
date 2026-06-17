@@ -392,9 +392,3 @@ extension SyntaxTree.TypeModel {
     }
   }
 }
-
-extension SyntaxTree.Attribute {
-  var isTestable: Bool {
-    self.simpleIdentifier == "testable" && self.arguments == nil
-  }
-}
