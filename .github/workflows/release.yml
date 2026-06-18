@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Find draft release
+        id: find-draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Get all releases via API (includes target_commitish)
+          releases=$(gh api repos/${{ github.repository }}/releases)
+
+          # Filter: draft=true, semver tag (x.y.z), no [WIP] in title
+          semver_drafts=$(echo "$releases" | jq '[.[] | select(.draft == true) | select(.tag_name | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")) | select(.name | test("^\\[WIP\\]") | not)]')
+
+          count=$(echo "$semver_drafts" | jq 'length')
+
+          if [ "$count" -eq 0 ]; then
+            echo "No draft release found with semver tag"
+            echo ""
+            echo "Create a draft release first with a tag like '1.3.0'"
+            exit 1
+          fi
+
+          if [ "$count" -gt 1 ]; then
+            echo "Multiple draft releases found with semver tags:"
+            echo "$semver_drafts" | jq -r '.[].tag_name'
+            echo ""
+            echo "Mark other drafts with [WIP] prefix in title to exclude them"
+            exit 1
+          fi
+
+          # Extract release info
+          tag=$(echo "$semver_drafts" | jq -r '.[0].tag_name')
+          target=$(echo "$semver_drafts" | jq -r '.[0].target_commitish')
+
+          # Check if tag already exists via API
+          if gh api repos/${{ github.repository }}/git/refs/tags/$tag --silent 2>/dev/null; then
+            echo "Tag $tag already exists"
+            echo ""
+            echo "Delete the existing tag or use a different version"
+            exit 1
+          fi
+
+          echo "Found draft release: $tag (target: $target)"
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "target=$target" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.find-draft.outputs.target }}
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build
+        run: swift build -v --enable-experimental-prebuilts
+
+      - name: Run tests
+        run: SWIFT_DETERMINISTIC_HASHING=1 swift test -v --parallel --enable-experimental-prebuilts
+
+      - name: Build Showcase (static analysis)
+        run: swift build --target Showcase --enable-experimental-prebuilts
+
+      - name: Build ShowcaseDependency (static analysis)
+        run: swift build --target ShowcaseDependency --enable-experimental-prebuilts
+
+      - name: Test Implicits for iOS
+        run: swift test --filter ImplicitsTests --sdk $(xcrun --sdk iphonesimulator --show-sdk-path) --triple arm64-apple-ios14.0-simulator --enable-experimental-prebuilts
+
+      - name: Create and push tag
+        env:
+          VERSION: ${{ steps.find-draft.outputs.tag }}
+        run: |
+          git tag "$VERSION"
+          git push origin "$VERSION"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.find-draft.outputs.tag }}
+        run: |
+          gh release edit "$VERSION" --repo ${{ github.repository }} --draft=false
+          echo "Published release $VERSION"
+          echo ""
+          echo "Release URL: https://github.com/${{ github.repository }}/releases/tag/$VERSION"
