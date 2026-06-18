@@ -133,7 +133,7 @@ let package = Package(
     ),
     .testTarget(
       name: "IntegrationTests",
-      dependencies: ["Implicits"],
+      dependencies: ["Implicits", "ImplicitsShared", "MacroUtils"],
       swiftSettings: [
         .enableExperimentalFeature("AccessLevelOnImport"),
         .treatAllWarnings(as: .error),
